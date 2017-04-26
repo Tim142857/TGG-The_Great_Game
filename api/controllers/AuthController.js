@@ -15,9 +15,8 @@ module.exports = {
             }
             req.logIn(user, function (err) {
                 if (err) res.send(err);
-                return res.send({
-                    message: 'login successful'
-                });
+                req.session.user = user;
+                res.redirect('/homepagePlayer')
             });
         })(req, res);
     },
@@ -25,6 +24,25 @@ module.exports = {
     logout: function (req, res) {
         req.logOut();
         res.send('logout successful');
+    },
+
+    register: function (req, res) {
+        res.view();
+    },
+
+    processRegister: function (req, res) {
+        var params = req.params.all();
+
+        User.create(params)
+            .exec(function (err, user) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                }
+                req.session.message = 'test';
+                res.redirect('/login')
+                delete req.session
+            });
     }
 };
 

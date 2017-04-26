@@ -6,6 +6,9 @@
  */
 
 module.exports = {
-	
+    homepagePlayer: function (req, res) {
+        console.log('user:' + req.session.user);
+        res.view('homepagePlayer');
+    }
 };
 

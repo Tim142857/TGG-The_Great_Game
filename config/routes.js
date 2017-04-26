@@ -35,7 +35,10 @@ module.exports.routes = {
     '/': {
         view: 'homepage'
     },
-
+    '/homepagePlayer': {
+        controller: 'UserController',
+        action: 'homepagePlayer'
+    },
     'GET /login': {
         controller: 'AuthController',
         action: 'login'
@@ -43,6 +46,14 @@ module.exports.routes = {
     'POST /login': {
         controller: 'AuthController',
         action: 'process'
+    },
+    'GET /register': {
+        controller: 'AuthController',
+        action: 'register'
+    },
+    'POST /register': {
+        controller: 'AuthController',
+        action: 'processRegister'
     },
     'GET /logout': {
         controller: 'AuthController',
