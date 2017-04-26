@@ -1,4 +1,17 @@
 {
-	"Welcome": "Welcome",
-	"A brand new app.": "A brand new app."
+  "Welcome": "Welcome",
+  "A brand new app.": "A brand new app.",
+  "email": "email",
+  "password": "password",
+  "login": "login",
+  "register": "register",
+  "ranking": "ranking",
+  "profile": "profile",
+  "jouer": "play",
+  "logout": "logout",
+  "login fail": "login fail",
+  "registration successful, you can login now!": "registration successful, you can login now!",
+  "logout successful": "logout successful",
+  "settings": "settings",
+  "name": "name"
 }

@@ -1,4 +1,17 @@
 {
-	"Welcome": "Bienvenue",
-	"A brand new app.": "Une toute nouvelle application."
+  "Welcome": "Bienvenue",
+  "A brand new app.": "Une toute nouvelle application.",
+  "email": "email",
+  "password": "mot de passe",
+  "login": "se connecter",
+  "register": "s'enregistrer",
+  "ranking": "classement",
+  "profile": "profil",
+  "jouer": "jouer",
+  "logout": "déconnexion",
+  "login fail": "identifiant/mot de passe incorrect",
+  "registration successful, you can login now!": "inscription réussie! Vous pouvez maintenant vous connecter",
+  "logout successful": "déconnexion réussie",
+  "settings": "réglages",
+  "name": "nom"
 }

@@ -1,1 +1,9 @@
 <h1>Homepage</h1>
+<% if(req.session.user){ %>
+<p>
+    <%= req.session.user.name %>
+</p>
+<% } %>
+
+<a href="/login"><%= __('login') %></a>
+<a href="/login"><%= __('register') %></a>

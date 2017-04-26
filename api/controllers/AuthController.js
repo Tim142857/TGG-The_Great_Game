@@ -8,22 +8,23 @@ module.exports = {
     process: function (req, res) {
         passport.authenticate('local', function (err, user, info) {
             if ((err) || (!user)) {
-                return res.send({
-                    message: 'login failed'
+                req.addFlash('error', 'login fail');
+                res.redirect('/login');
+            } else {
+                req.logIn(user, function (err) {
+                    if (err) res.send(err);
+                    req.session.user = user;
+                    res.redirect('/homepagePlayer')
                 });
-                res.send(err);
             }
-            req.logIn(user, function (err) {
-                if (err) res.send(err);
-                req.session.user = user;
-                res.redirect('/homepagePlayer')
-            });
         })(req, res);
     },
 
     logout: function (req, res) {
+        delete req.session.user;
         req.logOut();
-        res.send('logout successful');
+        req.addFlash('info', 'logout successful');
+        res.redirect('/');
     },
 
     register: function (req, res) {
@@ -39,9 +40,8 @@ module.exports = {
                     res.send(err);
                     console.log(err);
                 }
-                req.session.message = 'test';
+                req.addFlash('success', 'Registration successful, you can login now!');
                 res.redirect('/login')
-                delete req.session
             });
     }
 };

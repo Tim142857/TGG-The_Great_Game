@@ -1,0 +1,86 @@
+body {
+    background-color: rgb(32, 32, 32);
+}
+
+.main-content {
+    background-color: rgb(12, 12, 12);
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.navbar {
+    background-color: rgb(12, 12, 12);
+}
+
+.navbar-default {
+    border: none;
+}
+
+.navbar-nav > li > a {
+    color: blue !important;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.navbar-nav > li > a:hover {
+    color: rgb(255, 0, 0) !important;
+}
+
+.navbar-collapse {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.navbar ul.nav {
+    margin: 0;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul.nav li {
+    float: right;
+    display: table-cell;
+    width: 100%;
+    float: none;
+    text-align: center;
+}
+
+.navbar .nav li:first-child a {
+    border-left: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.navbar .nav li:last-child a {
+    border-right: 0;
+    border-radius: 0 333px 3px 0;
+}
+
+.navbar .nav li:last-child a {
+    border-right: 0;
+    border-radius: 0;
+}
+
+.navbar-default .navbar-nav > .open > a {
+    background-color: rgb(12, 12, 12) !important;
+}
+
+.dropdown-menu {
+    background-color: black;
+    border: 1px solid blue;
+}
+
+.dropdown-menu > li > a {
+    color: blue !important;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.dropdown-menu > li > a:hover {
+    background-color: black;
+}
