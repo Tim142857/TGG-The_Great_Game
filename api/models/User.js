@@ -5,6 +5,8 @@ module.exports = {
     attributes: {
         name: {
             type: 'string',
+            required: true,
+            unique: true
         },
         email: {
             type: 'string',
@@ -18,7 +20,30 @@ module.exports = {
 
         resourceQt: {
             type: 'integer',
-            required: false
+            required: false,
+            defaulsTo: 0
+        },
+
+        elo: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 1000
+        },
+        wins: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 0
+        },
+        totalGames: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 0
+        },
+        state: {
+            type: 'string',
+            required: true,
+            enum: ['connected', 'disconnected', 'in-game', 'pending'],
+            defaultsTo: 'disconnected'
         },
         game: {
             model: 'game',

@@ -30,6 +30,11 @@ module.exports.policies = {
     UserController: {
         "create": true,
         "homepagePlayer": "authenticated",
+        "profile": "authenticated",
+        "settings": "authenticated",
+        "rules": "authenticated",
+        "ranking": "authenticated",
+        "play":"authenticated"
     },
     AuthController: {
         '*': true,

@@ -7,11 +7,12 @@
   "register": "register",
   "ranking": "ranking",
   "profile": "profile",
-  "jouer": "play",
+  "play": "play",
   "logout": "logout",
   "login fail": "login fail",
   "registration successful, you can login now!": "registration successful, you can login now!",
   "logout successful": "logout successful",
   "settings": "settings",
-  "name": "name"
+  "name": "name",
+  "rules": "rules"
 }

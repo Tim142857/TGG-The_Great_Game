@@ -33,7 +33,10 @@ module.exports.routes = {
      ***************************************************************************/
 
     '/': {
-        view: 'homepage'
+        view: 'homepage',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
     },
     '/homepagePlayer': {
         controller: 'UserController',
@@ -41,23 +44,58 @@ module.exports.routes = {
     },
     'GET /login': {
         controller: 'AuthController',
-        action: 'login'
+        action: 'login',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
     },
     'POST /login': {
         controller: 'AuthController',
-        action: 'process'
+        action: 'process',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
     },
     'GET /register': {
         controller: 'AuthController',
-        action: 'register'
+        action: 'register',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
     },
     'POST /register': {
         controller: 'AuthController',
-        action: 'processRegister'
+        action: 'processRegister',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
     },
     'GET /logout': {
         controller: 'AuthController',
-        action: 'logout'
+        action: 'logout',
+        locals: {
+            layout: 'layouts/layoutVisitor'
+        }
+    },
+    '/profile': {
+        controller: 'UserController',
+        action: 'profile'
+    },
+    '/settings': {
+        controller: 'UserController',
+        action: 'settings'
+    },
+    '/ranking': {
+        controller: 'UserController',
+        action: 'ranking'
+    },
+    '/rules': {
+        controller: 'UserController',
+        action: 'rules'
+    },
+    '/play': {
+        controller: 'UserController',
+        action: "play"
     }
 
     /***************************************************************************

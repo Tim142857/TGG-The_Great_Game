@@ -1,0 +1,22 @@
+<table class="table">
+    <tr>
+        <th>Nom:</th>
+        <th><%= req.session.user.name %></th>
+    </tr>
+    <tr>
+        <th>Email:</th>
+        <th><%= req.session.user.email %></th>
+    </tr>
+    <tr>
+        <th>Elo:</th>
+        <th><%= req.session.user.elo %></th>
+    </tr>
+    <tr>
+        <th>Victoires:</th>
+        <th><%= req.session.user.wins %></th>
+    </tr>
+    <tr>
+        <th>Total de games:</th>
+        <th><%= req.session.user.totalGames %></th>
+    </tr>
+</table>

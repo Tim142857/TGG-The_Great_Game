@@ -8,12 +8,14 @@ module.exports = {
     process: function (req, res) {
         passport.authenticate('local', function (err, user, info) {
             if ((err) || (!user)) {
-                req.addFlash('error', 'login fail');
+                req.addFlash('error', req.__('login fail'));
                 res.redirect('/login');
             } else {
                 req.logIn(user, function (err) {
                     if (err) res.send(err);
                     req.session.user = user;
+                    User.update(user.id, {state: 'connected'}).exec(function afterwards(err, updated) {
+                    });
                     res.redirect('/homepagePlayer')
                 });
             }
@@ -21,9 +23,11 @@ module.exports = {
     },
 
     logout: function (req, res) {
+        User.update(req.session.user.id, {state: 'disconnected'}).exec(function afterwards(err, updated) {
+        });
         delete req.session.user;
         req.logOut();
-        req.addFlash('info', 'logout successful');
+        req.addFlash('info', req.__('logout successful'));
         res.redirect('/');
     },
 
@@ -40,7 +44,7 @@ module.exports = {
                     res.send(err);
                     console.log(err);
                 }
-                req.addFlash('success', 'Registration successful, you can login now!');
+                req.addFlash('success', req.__('registration successful, you can login now!'));
                 res.redirect('/login')
             });
     }

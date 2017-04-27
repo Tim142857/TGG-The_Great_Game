@@ -7,11 +7,12 @@
   "register": "s'enregistrer",
   "ranking": "classement",
   "profile": "profil",
-  "jouer": "jouer",
+  "play": "jouer",
   "logout": "déconnexion",
   "login fail": "identifiant/mot de passe incorrect",
   "registration successful, you can login now!": "inscription réussie! Vous pouvez maintenant vous connecter",
   "logout successful": "déconnexion réussie",
   "settings": "réglages",
-  "name": "nom"
+  "name": "nom",
+  "rules": "règles"
 }
