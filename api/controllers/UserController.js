@@ -6,46 +6,57 @@
  */
 
 var UserController = {
-    homepagePlayer: function (req, res) {
-        res.view('homepagePlayer');
-    },
+  homepagePlayer: function (req, res) {
+    res.view('homepagePlayer');
+  },
 
-    profile: function (req, res) {
-        res.view('profile');
-    },
+  profile: function (req, res) {
+    res.view('profile');
+  },
 
-    settings: function (req, res) {
-        res.view('settings');
-    },
+  settings: function (req, res) {
+    res.view('settings');
+  },
 
-    ranking: function (req, res) {
-        res.view('ranking');
-    },
+  ranking: function (req, res) {
+    res.view('ranking');
+  },
 
-    rules: function (req, res) {
-        res.view('rules');
-    },
+  rules: function (req, res) {
+    res.view('rules');
+  },
 
-    play: function (req, res) {
-        //check si un joueur en attente
-        UserController.searchPendingPlayer(function (id) {
+  play: function (req, res) {
+    //check si un joueur en attente
+    UserController.searchPendingPlayer(function (id) {
+      if (id != -1) {
+        User.update(req.session.user.id, {state: 'in-game'}).exec(function afterwards(err, updated) {
+          User.update(id, {state: 'in-game'}).exec(function afterwards(err, updated) {
             res.view('play', {id: id});
+          });
         });
-        //sinon mise en attente
-        //création de la game
-        //renvoi vers la vue
-    },
+      } else {
+        User.update(req.session.user.id, {state: 'pending'}).exec(function afterwards(err, updated) {
+          res.view('play', {id: null});
+        });
+      }
 
-    searchPendingPlayer: function (callback) {
-        User.findOne({state: 'pending'}).exec(function (err, record) {
-            var id = null;
-            if (record == 'undefined' || typeof(record) == 'undefined') {
-                id = -1;
-            } else {
-                id = record.id;
-            }
-            callback(id);
-        });
-    }
+    });
+    //sinon mise en attente
+    //création de la game
+    //renvoi vers la vue
+  },
+
+  searchPendingPlayer: function (callback) {
+    User.findOne({state: 'pending'}).exec(function (err, record) {
+      var id = null;
+      if (record == 'undefined' || typeof(record) == 'undefined') {
+        id = -1;
+      } else {
+        id = record.id;
+      }
+      callback(id);
+    });
+  }
 };
 module.exports = UserController;
