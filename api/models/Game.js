@@ -15,21 +15,20 @@ module.exports = {
         },
         turnNb: {
             type: 'integer',
-            required: true
+            // required: true
         },
         map: {
             model: 'map',
-            required: true
+            // required: true
         },
         turnPlayer: {
             model: 'user',
-            required: true
+            // required: true
+        },
+        players: {
+            collection: 'user',
+            via: 'game'
         }
-    },
-
-    players: {
-        collection: 'user',
-        via: 'game'
     }
 };
 

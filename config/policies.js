@@ -34,10 +34,13 @@ module.exports.policies = {
         "settings": "authenticated",
         "rules": "authenticated",
         "ranking": "authenticated",
-        "play":"authenticated"
+        "play": true
     },
     AuthController: {
         '*': true,
+    },
+    GameController: {
+        '*': true
     }
 
     /***************************************************************************

@@ -96,6 +96,10 @@ module.exports.routes = {
     '/play': {
         controller: 'UserController',
         action: "play"
+    },
+    '/game/:id':{
+        controller: 'GameController',
+        action: "startGame"
     }
 
     /***************************************************************************

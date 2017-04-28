@@ -6,6 +6,12 @@
  */
 
 module.exports = {
-	
+    startGame: function (req, res) {
+        Game.findOne({
+            id: req.params.id
+        }).populate('players').exec(function (err, game) {
+            res.view('game', {game: game})
+        });
+    }
 };
 

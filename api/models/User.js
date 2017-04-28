@@ -45,6 +45,9 @@ module.exports = {
             enum: ['connected', 'disconnected', 'in-game', 'pending'],
             defaultsTo: 'disconnected'
         },
+        socket: {
+            type: 'string'
+        },
         game: {
             model: 'game',
             required: false

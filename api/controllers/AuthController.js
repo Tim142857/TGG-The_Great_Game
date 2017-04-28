@@ -14,18 +14,30 @@ module.exports = {
                 req.logIn(user, function (err) {
                     if (err) res.send(err);
                     req.session.user = user;
-                    User.update(user.id, {state: 'connected'}).exec(function afterwards(err, updated) {
+                    //check if user wasnt alrdy logged somewhere
+                    // console.log(req.session);
+                    if (user.session != null) {
+                        console.log('alrdy logged');
+                        console.log(user.session.sid);
+                    }
+                    User.update(user.id, {
+                        state: 'connected',
+                        session: req.session.sid
+                    }).exec(function afterwards(err, updated) {
                     });
-                    res.redirect('/homepagePlayer')
+                    res.redirect('/homepagePlayer');
                 });
             }
         })(req, res);
     },
 
     logout: function (req, res) {
-        User.update(req.session.user.id, {state: 'disconnected'}).exec(function afterwards(err, updated) {
-        });
-        delete req.session.user;
+        // console.log('logout');
+        if (req.session.user.id != null) {
+            User.update(req.session.user.id, {state: 'disconnected'}).exec(function afterwards(err, updated) {
+            });
+            delete req.session.user;
+        }
         req.logOut();
         req.addFlash('info', req.__('logout successful'));
         res.redirect('/');
@@ -41,11 +53,14 @@ module.exports = {
         User.create(params)
             .exec(function (err, user) {
                 if (err) {
-                    res.send(err);
-                    console.log(err);
+                    // res.send(err);
+                    // console.log(err);
+                    req.addFlash('error', err);
+                    res.redirect('/login')
+                } else {
+                    req.addFlash('success', req.__('registration successful, you can login now!'));
+                    res.redirect('/login')
                 }
-                req.addFlash('success', req.__('registration successful, you can login now!'));
-                res.redirect('/login')
             });
     }
 };
