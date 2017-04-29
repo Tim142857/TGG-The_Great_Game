@@ -111,6 +111,6 @@ var UserController = {
             }
             callback(record);
         });
-    }
+    },
 };
 module.exports = UserController;

@@ -97,9 +97,29 @@ module.exports.routes = {
         controller: 'UserController',
         action: "play"
     },
-    '/game/:id':{
+    '/game/:id': {
         controller: 'GameController',
         action: "startGame"
+    },
+    '/test': {
+        controller: 'MapController',
+        action: 'createMap'
+    },
+    '/chat': {
+        controller: 'ChatController',
+        action: 'startChat'
+    },
+    '/send-message': {
+        controller: 'ChatController',
+        action: 'sendMessage'
+    },
+    '/send-img': {
+        controller: 'ChatController',
+        action: 'sendImg'
+    },
+    '/send-video': {
+        controller: 'ChatController',
+        action: 'sendVideo'
     }
 
     /***************************************************************************
@@ -112,4 +132,5 @@ module.exports.routes = {
      *                                                                          *
      ***************************************************************************/
 
-};
+}
+;

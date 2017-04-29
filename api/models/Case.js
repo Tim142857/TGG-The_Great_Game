@@ -13,13 +13,17 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
-        map: {
-            model: 'map',
+        game: {
+            model: 'game',
             required: true
         },
         ownedBy: {
             model: 'user',
             required: false
+        },
+        numCase: {
+            type: 'integer',
+            required: true
         },
         coordX: {
             type: 'integer',
@@ -36,11 +40,11 @@ module.exports = {
         amelioration: {
             model: 'amelioration',
             required: false
+        },
+        units: {
+            collection: 'unit',
+            via: 'case'
         }
-    },
-    units: {
-        collection: 'unit',
-        via: 'case'
     }
 };
 
