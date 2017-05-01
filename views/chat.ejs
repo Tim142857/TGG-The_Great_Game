@@ -1,19 +1,20 @@
+<% block('localScripts', '<script src="../client-js/client-chat.js></script>') %>
+
 <div class="col-xs-12" id="chat-content" style="background-color: white; height:600px; overflow-y: scroll">
 
 </div>
-<form id="form-message">
-    <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Votre message ...">
-    </div>
+<form id="form-message" data-type="message">
+  <div class="form-group">
+    <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Votre message ...">
+  </div>
 </form>
-<form id="form-img">
-    <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-img" placeholder="img link">
-    </div>
+<form id="form-img" data-type="img">
+  <div class="form-group">
+    <input type="text" class="form-control col-xs-10" id="input-img" placeholder="img link">
+  </div>
 </form>
-<form id="form-video">
-    <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-video" placeholder="only youtube video link">
-    </div>
+<form id="form-video" data-type="video">
+  <div class="form-group">
+    <input type="text" class="form-control col-xs-10" id="input-video" placeholder="only youtube video link">
+  </div>
 </form>
-
