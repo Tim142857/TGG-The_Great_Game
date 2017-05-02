@@ -23,10 +23,12 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "rc": "1.0.1",
+    "request": "^2.81.0",
     "sails": "~0.12.13",
     "sails-disk": "~0.10.9",
     "sails-hook-flash": "^0.2.2",
-    "sails-mysql": "^0.11.5"
+    "sails-mysql": "^0.11.5",
+    "xml2js": "^0.4.17"
   },
   "scripts": {
     "debug": "node debug app.js",

@@ -48,6 +48,9 @@ module.exports = {
         socket: {
             type: 'string'
         },
+        socketChat: {
+            type: 'string'
+        },
         game: {
             model: 'game',
             required: false

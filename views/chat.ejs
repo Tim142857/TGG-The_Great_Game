@@ -1,20 +1,28 @@
-<% block('localScripts', '<script src="../client-js/client-chat.js></script>') %>
+<script>
+    <%- partial('./partials/client-js/client-chat.js') %>
+</script>
 
 <div class="col-xs-12" id="chat-content" style="background-color: white; height:600px; overflow-y: scroll">
-
 </div>
 <form id="form-message" data-type="message">
-  <div class="form-group">
-    <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Votre message ...">
-  </div>
+    <div class="form-group">
+        <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Text Message">
+    </div>
 </form>
 <form id="form-img" data-type="img">
-  <div class="form-group">
-    <input type="text" class="form-control col-xs-10" id="input-img" placeholder="img link">
-  </div>
+    <div class="form-group">
+        <input type="text" class="form-control col-xs-10" id="input-img" placeholder="Img link">
+    </div>
 </form>
 <form id="form-video" data-type="video">
-  <div class="form-group">
-    <input type="text" class="form-control col-xs-10" id="input-video" placeholder="only youtube video link">
-  </div>
+    <div class="form-group">
+        <input type="text" class="form-control col-xs-10" id="input-video" placeholder="Youtube video link">
+    </div>
 </form>
+<form id="form-song-request" data-type="song-request">
+    <div class="form-group">
+        <input type="text" class="form-control col-xs-10" id="input-song-request" placeholder="Deezer link">
+    </div>
+</form>
+
+<!--<audio src="http://e-cdn-preview-5.deezer.com/stream/241284008322.mp3" controls></audio>-->

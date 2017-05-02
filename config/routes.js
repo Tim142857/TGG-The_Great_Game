@@ -113,14 +113,15 @@ module.exports.routes = {
         controller: 'ChatController',
         action: 'sendMessage'
     },
-    '/send-img': {
+    '/chat-authenticate': {
         controller: 'ChatController',
-        action: 'sendImg'
+        action: 'authenticate'
     },
-    '/send-video': {
+    '/send-poke': {
         controller: 'ChatController',
-        action: 'sendVideo'
+        action: 'sendPoke'
     }
+
 
     /***************************************************************************
      *                                                                          *

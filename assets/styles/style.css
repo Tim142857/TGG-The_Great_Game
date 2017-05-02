@@ -85,3 +85,7 @@ body {
 .dropdown-menu > li > a:hover {
     background-color: black;
 }
+
+.username {
+    cursor: pointer;
+}
