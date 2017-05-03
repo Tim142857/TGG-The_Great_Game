@@ -43,7 +43,8 @@ module.exports.policies = {
         '*': true
     },
     ChatController: {
-        '*': true
+        'startChat': 'authenticated',
+        '*': "socketAuthenticated"
     }
 
     /***************************************************************************

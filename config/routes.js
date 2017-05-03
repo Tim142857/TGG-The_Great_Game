@@ -120,6 +120,14 @@ module.exports.routes = {
     '/send-poke': {
         controller: 'ChatController',
         action: 'sendPoke'
+    },
+    '/send-song-answer': {
+        controller: 'ChatController',
+        action: 'sendSongAnswer'
+    },
+    '/confirm-track': {
+        controller: 'ChatController',
+        action: 'confirmTrack'
     }
 
 

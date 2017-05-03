@@ -20,7 +20,8 @@ module.exports = {
         },
         content: {
             type: 'string',
-            required: true
+            required: true,
+            maxLength: 500
         },
         date: {
             type: 'datetime',
@@ -31,6 +32,11 @@ module.exports = {
         type: {
             type: 'string',
             enum: ['text', 'youtubeVideo', 'dailymotionVideo', 'img', 'song-request']
+        },
+        display: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: true
         }
 
     }

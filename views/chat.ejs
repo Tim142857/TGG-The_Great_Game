@@ -2,9 +2,11 @@
     <%- partial('./partials/client-js/client-chat.js') %>
 </script>
 
-<div class="col-xs-12" id="chat-content" style="background-color: white; height:600px; overflow-y: scroll">
+<div class="col-xs-9" id="chat-content" style="background-color: white; height:600px; overflow-y: scroll">
 </div>
-<form id="form-message" data-type="message">
+<div class="col-xs-3" id="list-users" style="background-color: black; height:600px; border: 1px solid blue">
+</div>
+<form id=" form-message" data-type="message">
     <div class="form-group">
         <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Text Message">
     </div>
@@ -25,4 +27,17 @@
     </div>
 </form>
 
-<!--<audio src="http://e-cdn-preview-5.deezer.com/stream/241284008322.mp3" controls></audio>-->
+<div id="modal-tracks-choice" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="choice-tracks">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button type="button" id="btn-choice-track" class="btn btn-primary">Choisir</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

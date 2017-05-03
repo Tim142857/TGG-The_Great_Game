@@ -51,6 +51,11 @@ module.exports = {
         socketChat: {
             type: 'string'
         },
+        chatScore: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 0
+        },
         game: {
             model: 'game',
             required: false
