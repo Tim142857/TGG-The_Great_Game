@@ -5,8 +5,9 @@ $(document).ready(function () {
     io.socket.get('/chat-authenticate', null, function (users) {
         var html = '';
         users.forEach(function (elm, index) {
-            html += "<p>" + elm.name + "</p>";
+            html += "<p><span  class='username-list'>" + elm.name + "</span> (<span class='score'>" + elm.chatScore + "</span> pts)</p>";
         });
+
         $('#list-users').text('');
         $('#list-users').append(html);
 
@@ -21,7 +22,6 @@ $(document).ready(function () {
     });
 
     io.socket.on('receive-message', function (data) {
-        // console.log('receive-message');
         switch (data.type) {
             case 'text':
                 $('#chat-content').prepend(createMessage(data.content, data.username, data.date));
@@ -33,15 +33,12 @@ $(document).ready(function () {
                 $('#chat-content').prepend(createVideo(data.content, data.username, data.date));
                 break;
             case 'song-request':
-                console.log('song:');
-                console.log(data.content);
                 $('#chat-content').prepend(createSongRequest(data.content, data.username, data.date, data.chatMessageId));
                 break;
         }
     });
 
     io.socket.on('new-user', function (data) {
-        // console.log('new user');
         var html = "<p style='font-weight: bolder'><span style='font-style:italic'>" + data.date.substr(11, 5) + "</span>";
         html += " - <span style='font-weight:bold'>" + data.username + "</span>" + " vient de se connecter";
         $('#chat-content').prepend(html);
@@ -64,11 +61,13 @@ $(document).ready(function () {
         html += "<br/><audio class='center-block' controls><source src='";
         html += songRequest;
         html += "'></source></audio>";
-        html += "<form id='form-song-answer' data-chatMessageId='" + chatMessageId + "' data-type='song-answer' style='margin-top:15px'>";
+        html += "<form class='form-song-answer' data-chatMessageId='" + chatMessageId + "' data-type='song-answer' style='margin-top:15px'>";
         html += '<div class="form-group col-xs-offset-4 col-xs-4">';
         html += '<input type="text" class="form-control" id="input-song-answer" placeholder="Votre réponse...">';
         html += '</div>';
-        html += "<div class='col-xs-4' style='height:50px'></div>";
+        html += "<div class='col-xs-1' style='padding:0;'><div class='icon-blind-test icon-artist'><img class='img-responsive' src='/images/icone-micro.png'></div>";
+        html += "<div class='icon-blind-test icon-title'><img class='img-responsive' src='/images/icone-musique.png'></img></div></div>";
+        html += "<div class='col-xs-3' style='height:50px'></div>";
         html += "</div>";
         return generateMessage(username, html, date);
     }
@@ -77,7 +76,6 @@ $(document).ready(function () {
         var html = "<div style='text-align: center'><iframe width='560' height='200' src='https://www.youtube.com/embed/" + url.split("https://www.youtube.com/watch?v=")[1] + "?autoplay=1' frameborder='0' allowfullscreen autoplay></iframe></div>";
         return html;
     }
-
 
     $(document).on('submit', 'form', function (e) {
         e.preventDefault();
@@ -92,7 +90,6 @@ $(document).ready(function () {
             nbActions++;
             var type = $(this).attr('data-type');
             var params = new Array();
-            console.log('type:' + type);
             switch (type) {
                 case 'message':
                     params = {type: 'text', content: $('#input-message').val()};
@@ -108,8 +105,7 @@ $(document).ready(function () {
                     $('#input-song-request').val('');
                     break;
                 case 'song-answer':
-                    console.log('ici');
-                    var answer = $('input-song-answer').val();
+                    var answer = $('#input-song-answer').val();
                     var chatMessageId = $(this).attr('data-chatmessageid');
                     io.socket.post('/send-song-answer', {
                         answer: answer,
@@ -117,7 +113,16 @@ $(document).ready(function () {
                     }, function (resData, jwres) {
                         if (resData.error == true) {
                             if (confirm(resData.message)) document.location = resData.redirect;
+                        } else {
+                            alert(resData.message);
+                            if (resData.response == 'title') {
+                                $('[data-chatmessageid="' + chatMessageId + '"]').find('.icon-' + data.response).css('background-color', '#2DF037');
+                            }
+                            if (resData.response == 'artist') {
+                                $('[data-chatmessageid="' + chatMessageId + '"]').find('.icon-artist').css('background-color', '#2DF037');
+                            }
                         }
+                        $('#input-song-answer').val('');
                     });
                     break;
             }
@@ -140,14 +145,12 @@ $(document).ready(function () {
         html += " - <span style='font-weight:bold' class='username'>" + username + "</span>" + " : ";
         html += content;
         html += "</div><br/>";
-        // console.log(html);
         return html;
     };
 
     $(document).on("click", ".username", function (e) {
         e.preventDefault();
         var target = $(this).text();
-        // console.log('btn clique');
         io.socket.post('/send-poke', {target: target}, function (resData, jwres) {
         });
     });
@@ -165,6 +168,7 @@ $(document).ready(function () {
     });
 
     io.socket.on('choose-track', function (data) {
+        $('#choice-tracks').empty();
         var select = "<select class='form-control' id='select-choice-track' data-search='" + data.search + "'>";
         data.tracks.forEach(function (elm, index) {
             select += '<option value="' + index + '">' + elm.title + " / " + elm.artist + "</option>";
@@ -176,16 +180,46 @@ $(document).ready(function () {
 
     $('#btn-choice-track').on('click', function () {
         var numTrack = $('#select-choice-track').val();
-        console.log(numTrack);
         var search = $('#choice-tracks').find("select").attr('data-search');
-        console.log('search:' + search);
         io.socket.post('/confirm-track', {numTrack: numTrack, search: search}, function (resData, jwres) {
             if (resData.error == true) {
                 if (confirm(resData.message)) document.location = resData.redirect;
             }
+            alert(resData.message);
         });
         $('#modal-tracks-choice').modal('hide');
         $('#choice-tracks').empty();
+    });
+
+    io.socket.on('answers-found', function (data) {
+        $('[data-chatmessageid="' + data.chatMessageId + '"]').hide();
     })
 
+    io.socket.on('answer-found', function (data) {
+        if (data.response == 'title') {
+            $('[data-chatmessageid="' + data.chatMessageId + '"]').find('.icon-' + data.response).css('background-color', '#2DF037');
+            var html = "<p>" + data.user + " a trouvé le titre: \"" + data.responseContent + "\" (\+ 2 points)";
+            $(".form-song-answer").after(html);
+        }
+        if (data.response == 'artist') {
+            $('[data-chatmessageid="' + data.chatMessageId + '"]').find('.icon-artist').css('background-color', '#2DF037');
+            var html = "<p>" + data.user + " a trouvé l'artiste: \"" + data.responseContent + "\" (\+ 2 points)";
+            $(".form-song-answer").after(html);
+        }
+        $('#input-song-answer').val('');
+    });
+
+    io.socket.on('update-user', function (data) {
+        console.log('event recu');
+        $(".username-list").forEach(function (elm, index) {
+            console.log('ici');
+            console.log($(elm).text());
+            console.log($(elm).val());
+            console.log($(elm).html());
+            console.log(elm);
+            if (elm.text() == data.username) {
+                console.log('trouvé');
+            }
+        });
+    });
 });

@@ -89,3 +89,15 @@ body {
 .username {
     cursor: pointer;
 }
+
+.icon-blind-test {
+    float: left;
+    max-width: 50%;
+}
+
+.row-eq-height {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}

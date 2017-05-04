@@ -20,6 +20,16 @@ module.exports = {
         chatMessage: {
             model: 'ChatMessage',
             required: true
+        },
+        titleFound: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: false
+        },
+        artistFound: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: false
         }
     }
 };
