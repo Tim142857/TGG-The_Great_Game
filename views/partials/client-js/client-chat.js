@@ -29,7 +29,7 @@ $(document).ready(function () {
             case 'img':
                 $('#chat-content').prepend(createImg(data.content, data.username, data.date));
                 break;
-            case 'youtubeVideo':
+            case 'video':
                 $('#chat-content').prepend(createVideo(data.content, data.username, data.date));
                 break;
             case 'song-request':
@@ -40,8 +40,21 @@ $(document).ready(function () {
 
     io.socket.on('new-user', function (data) {
         var html = "<p style='font-weight: bolder'><span style='font-style:italic'>" + data.date.substr(11, 5) + "</span>";
-        html += " - <span style='font-weight:bold'>" + data.username + "</span>" + " vient de se connecter";
+        html += " - <span style='font-weight:bold'>" + data.user.name + "</span> " + data.message;
         $('#chat-content').prepend(html);
+
+        var alrdyThere = false;
+        $(".username-list").each(function (index, elm) {
+            if ($(elm).text() == data.user.name) {
+                $(elm).next('span').text(data.user.chatScore);
+                alrdyThere = true;
+                return false;
+            }
+        });
+        if (!alrdyThere) {
+            var html2 = "<p><span class='username-list'>" + data.user.name + "</span> (<span class='score'>" + data.user.chatScore + "</span> pts)</p>";
+            $('#list-users').append(html2);
+        }
     });
 
     function createMessage(message, username, date) {
@@ -53,7 +66,7 @@ $(document).ready(function () {
     }
 
     function createVideo(video, username, date) {
-        return generateMessage(username, parserYoutubeVideo(video), date);
+        return generateMessage(username, parservideo(video), date);
     }
 
     function createSongRequest(songRequest, username, date, chatMessageId) {
@@ -72,12 +85,74 @@ $(document).ready(function () {
         return generateMessage(username, html, date);
     }
 
-    function parserYoutubeVideo(url) {
-        var html = "<div style='text-align: center'><iframe width='560' height='200' src='https://www.youtube.com/embed/" + url.split("https://www.youtube.com/watch?v=")[1] + "?autoplay=1' frameborder='0' allowfullscreen autoplay></iframe></div>";
+    function parservideo(url) {
+
+        //-------------------
+        var type = '';
+        if (url.indexOf('youtube') !== -1) {
+            type = 'youtube';
+        }
+        if (url.indexOf('dailymotion') !== -1) {
+            type = 'dailymotion';
+        }
+        if (url.indexOf('vimeo') !== -1) {
+            type = 'vimeo';
+        }
+        switch (type) {
+            case 'youtube':
+                var html = "<div style='text-align: center'><iframe width='660' height='340' src='https://www.youtube.com/embed/" + url.split("https://www.youtube.com/watch?v=")[1].split("&")[0] + "' frameborder='0' allowfullscreen autoplay></iframe></div>";
+                break;
+            case 'dailymotion':
+                var html = "<div style='text-align: center'><iframe frameborder='0' width='660' height='340' src='http://www.dailymotion.com/embed/video/" + url.split("http://www.dailymotion.com/video/")[1] + "' allowfullscreen></iframe><br /></div>";
+                break;
+            case 'vimeo':
+                var html = "<div style='text-align: center'><iframe src='https://player.vimeo.com/video/" + url.split("https://vimeo.com/")[1] + "' width='660' height='340' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>";
+                break;
+            default:
+                // var url = "https://fr.pornhub.com/view_video.php?viewkey=1448723509";
+                var regexBase = /(\w*:\/\/\w*.\w*.\w{2,3})\//gi;
+                //get base url
+                var base = regexBase.exec(url)[0];
+
+                //get video id
+                var regex = /\w*:\/\/\w*.\w*.\w{2,3}(?:\/\w*)?[\/]([0-9]*)(?:[(\/)(&)]\w*)?|[?]\w*=([0-9]*)/gi;
+
+                /*
+                 ca ne marche pas si ?param= apres un / du genre http://ww.def.com/ed?param1=value1
+                 */
+                var match = regex.exec(url);
+                console.log(match);
+                for (var i = 0; i < match.length; i++) {
+                    console.log(match[i]);
+                }
+                var idVideo = 0;
+                if (!isNaN(parseInt(match[0]))) {
+                    console.log('0');
+                    idVideo = match[0];
+                    console.log(idVideo);
+                }
+                if (!isNaN(parseInt(match[1]))) {
+                    console.log('1');
+                    idVideo = match[1];
+                    console.log(idVideo);
+                }
+                if (!isNaN(parseInt(match[2]))) {
+                    console.log('2');
+                    idVideo = match[2];
+                    console.log(idVideo);
+                }
+                html = "<iframe frameborder='0' width='660' height='340' src='" + base + "embed/" + idVideo + "'></iframe>";
+                console.log(html);
+            // html = "<iframe frameborder='0' width='660' height='340' src='https://fr.pornhub.com/embed/1448723509'></iframe>";
+            // html = "<iframe frameborder='0' width='660' height='340' src='https://fr.youporn.com/embed/10398671'></iframe>";
+
+        }
+        console.log(html);
         return html;
     }
 
     $(document).on('submit', 'form', function (e) {
+        // console.log('form soumis');
         e.preventDefault();
         if (nbActions > 5) {
             nbActions += 15;
@@ -98,7 +173,7 @@ $(document).ready(function () {
                     params = {type: 'img', content: $('#input-img').val()};
                     break;
                 case 'video':
-                    params = {type: 'youtubeVideo', content: $('#input-video').val()};
+                    params = {type: 'video', content: $('#input-video').val()};
                     break;
                 case 'song-request':
                     params = {type: 'song-request', content: $('#input-song-request').val()};
@@ -141,6 +216,7 @@ $(document).ready(function () {
     });
 
     function generateMessage(username, content, date) {
+        // console.log(date);
         var html = "<div><span style='font-style:italic'>" + date.substr(11, 5) + "</span>";
         html += " - <span style='font-weight:bold' class='username'>" + username + "</span>" + " : ";
         html += content;
@@ -199,27 +275,37 @@ $(document).ready(function () {
         if (data.response == 'title') {
             $('[data-chatmessageid="' + data.chatMessageId + '"]').find('.icon-' + data.response).css('background-color', '#2DF037');
             var html = "<p>" + data.user + " a trouvé le titre: \"" + data.responseContent + "\" (\+ 2 points)";
-            $(".form-song-answer").after(html);
+            $('[data-chatmessageid="' + data.chatMessageId + '"]').after(html);
         }
         if (data.response == 'artist') {
             $('[data-chatmessageid="' + data.chatMessageId + '"]').find('.icon-artist').css('background-color', '#2DF037');
             var html = "<p>" + data.user + " a trouvé l'artiste: \"" + data.responseContent + "\" (\+ 2 points)";
-            $(".form-song-answer").after(html);
+            $('[data-chatmessageid="' + data.chatMessageId + '"]').after(html);
         }
         $('#input-song-answer').val('');
     });
 
     io.socket.on('update-user', function (data) {
-        console.log('event recu');
-        $(".username-list").forEach(function (elm, index) {
-            console.log('ici');
-            console.log($(elm).text());
-            console.log($(elm).val());
-            console.log($(elm).html());
-            console.log(elm);
-            if (elm.text() == data.username) {
-                console.log('trouvé');
+        $(".username-list").each(function (index, elm) {
+            if ($(elm).text() == data.username) {
+                $(elm).next('span').text(data.score);
+                return false;
             }
         });
     });
+
+    $('#input-message').Emoji({
+        path: 'img/emojione/',
+        class: 'emoji',
+        ext: 'png'
+    });
+    $('#chat-content').Emoji({
+        path: 'img/emojione/',
+        class: 'emoji',
+        ext: 'png'
+    });
+
+    $('#btn-test').on('click', function () {
+        window.open("", "", "width=200,height=100");
+    })
 });

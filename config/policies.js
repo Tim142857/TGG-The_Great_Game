@@ -26,7 +26,7 @@ module.exports.policies = {
      *                                                                          *
      ***************************************************************************/
 
-    '*': "sessionAuth",
+    '*': ["sessionAuth"],
     UserController: {
         "create": true,
         "homepagePlayer": "authenticated",
@@ -34,7 +34,8 @@ module.exports.policies = {
         "settings": "authenticated",
         "rules": "authenticated",
         "ranking": "authenticated",
-        "play": true
+        "play": true,
+        "change-locale": true
     },
     AuthController: {
         '*': true,
@@ -43,7 +44,7 @@ module.exports.policies = {
         '*': true
     },
     ChatController: {
-        'startChat': 'authenticated',
+        'startChat': ['authenticated'],
         '*': "socketAuthenticated"
     }
 

@@ -31,7 +31,7 @@ module.exports = {
         },
         type: {
             type: 'string',
-            enum: ['text', 'youtubeVideo', 'dailymotionVideo', 'img', 'song-request']
+            enum: ['text', 'video', 'img', 'song-request']
         },
         display: {
             type: 'boolean',

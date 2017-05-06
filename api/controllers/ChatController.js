@@ -8,7 +8,8 @@
 var ChatController = {
     startChat: function (req, res) {
         sails.sockets.blast('new-user', {
-            username: req.session.user.name,
+            user: req.session.user,
+            message: req.__('just log in'),
             date: new Date()
         });
         var myQuery = ChatMessage.find();
@@ -23,13 +24,23 @@ var ChatController = {
                     User.findOne({name: req.session.user.name}).exec(function (err, user) {
                         for (var i = 0; i < results.length; i++) {
                             if (i <= results.length) {
-                                sails.sockets.broadcast(user.socketChat, 'receive-message', {
-                                    content: results[i].content,
-                                    type: results[i].type,
-                                    date: results[i].date,
-                                    username: results[i].user.name,
-                                    chatMessageId: results[i].id
-                                });
+                                if (results[i].type == 'video' && results[i].content.indexOf('youtube') === -1 && results[i].content.indexOf('dailymotion') === -1 && results[i].content.indexOf('vimeo') === -1) {
+                                    console.log('ici');
+                                    ChatMessage.update({id: results[i].id}, {display: false}).exec(function afterwards(err, updated) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        // console.log(updated);
+                                    });
+                                } else {
+                                    sails.sockets.broadcast(user.socketChat, 'receive-message', {
+                                        content: results[i].content,
+                                        type: results[i].type,
+                                        date: results[i].date,
+                                        username: results[i].user.name,
+                                        chatMessageId: results[i].id
+                                    });
+                                }
                             }
                         }
                     });
@@ -39,10 +50,22 @@ var ChatController = {
     },
 
     sendMessage: function (req, res) {
-        var content = req.param('content');
+        var content = req.param('content').trim();
+        if (content.length > 254) {
+            content = content.substr(0, 254);
+        }
+        console.log(content);
         var type = req.param('type');
         var user = req.session.user;
         var date = new Date();
+
+        content = ChatController.filterInput(content);
+        if (content == '' || content === null) {
+            sails.sockets.broadcast(req.session.user.socketChat, 'error-message', {
+                message: 'Pas bien!'
+            });
+            return false;
+        }
 
         if (type == 'song-request') {
             var link = encodeURI("https://api.deezer.com/search/track/?q=" + content + '&output=xml');
@@ -69,25 +92,45 @@ var ChatController = {
 
                     } else {
                         sails.sockets.broadcast(req.session.user.socketChat, 'error-message', {
-                            message: 'Pas de résultats :/'
+                            message: req.__('No results')
                         });
                     }
                 });
             });
 
+        } else if (type == 'word-request') {
+            var fs = require("fs");
+            fs.readFileSync('./lexique.txt').toString().split('\n').forEach(function (line, index) {
+                if (line.trim().toUpperCase() == content.trim().toUpperCase()) {
+                    throw '';
+                }
+
+            });
+
         } else {
+            if (type == 'video') {
+                if (content.indexOf('youtube') !== -1 && content.indexOf('dailymotion') !== -1 && content.indexOf('vimeo') !== -1) {
+                    sails.sockets.broadcast(req.session.user.socketChat, 'error-message', {
+                        message: 'Type de vidéo non pris en charge'
+                    });
+                }
+            }
             ChatMessage.create({type: type, content: content, user: user.id}).exec(function (err, chatMessage) {
                 if (err) {
                     console.log(err);
                 }
+                console.log('----------------------------------');
+                console.log(chatMessage.date);
+                sails.sockets.blast('receive-message', {
+                    content: content,
+                    type: type,
+                    date: chatMessage.date,
+                    username: req.session.user.name
+                });
             });
-            sails.sockets.blast('receive-message', {
-                content: content,
-                type: type,
-                date: date,
-                username: req.session.user.name
-            });
+
         }
+
     },
 
     authenticate: function (req, res) {
@@ -143,26 +186,32 @@ var ChatController = {
                             if (err) {
                                 console.log(err);
                             }
-                            res.send({message: 'Votre proposition est valide, vous gagnez 1 point'});
-                            var newScore = req.session.user.chatScore + 1;
-                            User.update(req.session.user, {chatScore: newScore}).exec(function (err, updated) {
-                                sails.sockets.blast('update-user', {
-                                    username: req.session.user.name,
-                                    score: updated.chatScore
+                            res.send({message: req.__("valid proposition, u win 1 point")});
+                            User.findOne(req.session.user.id).exec(function (err, user) {
+                                if (err)console.log(err);
+                                var newScore = user.chatScore + 1;
+                                User.update(req.session.user.id, {chatScore: newScore}).exec(function afterwards(err, updated) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    sails.sockets.blast('update-user', {
+                                        username: req.session.user.name,
+                                        score: updated[0].chatScore
+                                    });
                                 });
-                            });
-                            sails.sockets.blast('receive-message', {
-                                content: content,
-                                type: type,
-                                date: date,
-                                username: req.session.user.name,
-                                chatMessageId: chatMessage.id
+                                sails.sockets.blast('receive-message', {
+                                    content: content,
+                                    type: type,
+                                    date: date,
+                                    username: req.session.user.name,
+                                    chatMessageId: chatMessage.id
+                                });
                             });
                         });
                     });
                 } else {
                     sails.sockets.broadcast(req.session.user.socketChat, 'error-message', {
-                        message: 'Pas de résultats :/'
+                        message: req.__('no results')
                     });
                 }
             });
@@ -184,79 +233,113 @@ var ChatController = {
         var chatMessageId = req.param('chatMessageId');
         Song.findOne({chatMessage: chatMessageId}).exec(function (err, song) {
             ChatMessage.findOne(chatMessageId).exec(function (err, chatMessage) {
-                if (chatMessage.user == req.session.user.id) {
-                    res.send({message: 'Vous ne pouvez pas répondre à votre propre proposition'});
-                } else {
-                    if (song.titleFound && song.artistFound) {
-                        res.send({message: 'les réponses ont déja été trouvées'});
-
-                        ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
-                            if (err)console.log(err);
-                        });
+                    if (chatMessage.user == req.session.user.id) {
+                        res.send({message: req.__("you can't answer on your own proposition")});
                     } else {
-                        var scoreTitle = ChatController.levenshtein(answer.toUpperCase(), song.title.toUpperCase());
-                        var scoreArtist = ChatController.levenshtein(answer.toUpperCase(), song.artist.toUpperCase());
-                        var titleStillNotFound = true;
-                        var artistStillNotFound = true;
-                        if (!song.titleFound) {
-                            if (scoreTitle <= 1.5) {
-                                res.send({message: 'Bravo, vous avez trouvé le titre', response: 'title'});
-                                sails.sockets.blast('answer-found', {
-                                    chatMessageId: song.chatMessage,
-                                    response: 'title',
-                                    user: req.session.user.name,
-                                    responseContent: song.title
-                                });
-                                titleStillNotFound = false;
-                                Song.update(song.id, {titleFound: true}).exec(function afterwards(err, updated) {
-                                    if (err)console.log(err);
-                                    Song.findOne(song.id).exec(function (err, song) {
-                                        if (song.titleFound && song.artistFound) {
-                                            console.log('ici');
-                                            sails.sockets.blast('answers-found', {
-                                                chatMessageId: song.chatMessage
-                                            });
-                                            ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
-                                                if (err)console.log(err);
-                                            });
-                                        }
-                                    });
-                                });
-                            }
-                        }
-                        if (!song.artistFound && titleStillNotFound) {
-                            if (scoreArtist <= 1.5) {
-                                artistStillNotFound = false;
-                                res.send({message: "Bravo, vous avez trouvé l'artiste!", response: 'artist'});
-                                sails.sockets.blast('answer-found', {
-                                    chatMessageId: song.chatMessage,
-                                    response: 'artist',
-                                    user: req.session.user.name,
-                                    responseContent: song.artist
-                                });
-                                Song.update(song.id, {artistFound: true}).exec(function afterwards(err, updated) {
-                                    if (err)console.log(err);
-                                    Song.findOne(song.id).exec(function (err, song) {
-                                        if (song.titleFound && song.artistFound) {
-                                            sails.sockets.blast('answers-found', {
-                                                chatMessageId: song.chatMessage
-                                            });
+                        if (song.titleFound && song.artistFound) {
+                            res.send({message: req.__('answers are already given')});
 
-                                            ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
-                                                if (err)console.log(err);
+                            ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
+                                if (err)console.log(err);
+                            });
+                        } else {
+                            var scoreTitle = ChatController.levenshtein(answer.toUpperCase(), song.title.toUpperCase());
+                            var scoreArtist = ChatController.levenshtein(answer.toUpperCase(), song.artist.toUpperCase());
+                            var titleStillNotFound = true;
+                            var artistStillNotFound = true;
+                            if (!song.titleFound) {
+                                if (scoreTitle <= 2) {
+                                    res.send({message: req.__('congratulations, you found the title'), response: 'title'});
+                                    //----------------------------------------------------------
+                                    User.findOne(req.session.user.id).exec(function (err, user) {
+                                        if (err)console.log(err);
+                                        var newScore = user.chatScore + 2;
+                                        User.update(req.session.user.id, {chatScore: newScore}).exec(function afterwards(err, updated) {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                            sails.sockets.blast('update-user', {
+                                                username: req.session.user.name,
+                                                score: updated[0].chatScore
                                             });
-                                        }
+                                        });
                                     });
-                                });
+                                    //-------------------------------------------------------------
+                                    sails.sockets.blast('answer-found', {
+                                        chatMessageId: song.chatMessage,
+                                        response: 'title',
+                                        user: req.session.user.name,
+                                        responseContent: song.title
+                                    });
+                                    titleStillNotFound = false;
+                                    Song.update(song.id, {titleFound: true}).exec(function afterwards(err, updated) {
+                                        if (err)console.log(err);
+                                        Song.findOne(song.id).exec(function (err, song) {
+                                            if (song.titleFound && song.artistFound) {
+                                                console.log('ici');
+                                                sails.sockets.blast('answers-found', {
+                                                    chatMessageId: song.chatMessage
+                                                });
+                                                ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
+                                                    if (err)console.log(err);
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
                             }
-                        }
-                        if (artistStillNotFound && titleStillNotFound) {
-                            res.send({message: 'Mauvaise réponse'});
-                        }
+                            if (!song.artistFound && titleStillNotFound) {
+                                if (scoreArtist <= 2) {
+                                    artistStillNotFound = false;
+                                    res.send({
+                                        message: req.__('congratulations, you found the artist'),
+                                        response: 'artist'
+                                    });
+                                    //----------------------------------------------------------
+                                    User.findOne(req.session.user.id).exec(function (err, user) {
+                                        if (err)console.log(err);
+                                        var newScore = user.chatScore + 2;
+                                        User.update(req.session.user.id, {chatScore: newScore}).exec(function afterwards(err, updated) {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                            sails.sockets.blast('update-user', {
+                                                username: req.session.user.name,
+                                                score: updated[0].chatScore
+                                            });
+                                        });
+                                    });
+                                    //-------------------------------------------------------------
+                                    sails.sockets.blast('answer-found', {
+                                        chatMessageId: song.chatMessage,
+                                        response: 'artist',
+                                        user: req.session.user.name,
+                                        responseContent: song.artist
+                                    });
+                                    Song.update(song.id, {artistFound: true}).exec(function afterwards(err, updated) {
+                                        if (err)console.log(err);
+                                        Song.findOne(song.id).exec(function (err, song) {
+                                            if (song.titleFound && song.artistFound) {
+                                                sails.sockets.blast('answers-found', {
+                                                    chatMessageId: song.chatMessage
+                                                });
 
+                                                ChatMessage.update(song.chatMessage, {display: false}).exec(function (err, chatMessage) {
+                                                    if (err)console.log(err);
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                            if (artistStillNotFound && titleStillNotFound) {
+                                res.send({message: req.__('wrong answer')});
+                            }
+
+                        }
                     }
                 }
-            });
+            );
 
         });
     },
@@ -293,12 +376,26 @@ var ChatController = {
         }
 
         var length = (b.length + a.length) / 2;
-        return matrix[b.length][a.length] / length * 10;
+        var result = matrix[b.length][a.length] / length * 10;
+        console.log(a);
+        console.log(b);
+        console.log(result);
+        console.log('----------------------');
+        return result;
     },
 
     removeBracket: function removeBracket(string) {
-        return string[0].split("(")[0];
+        return string[0].split("(")[0].split(',')[0];
+    },
+
+    filterInput: function filterInput(str) {
+        var regex = /[^a-z 0-9?!.,()%^&*_+-:;=/]/gi;
+        if (str.search(regex) > -1) {
+            str = str.replace(regex, "");
+        }
+        return str;
     }
+
 };
 
 module.exports = ChatController;

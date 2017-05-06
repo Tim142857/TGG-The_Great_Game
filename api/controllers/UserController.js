@@ -112,5 +112,13 @@ var UserController = {
             callback(record);
         });
     },
+
+    changeLocale: function (req, res) {
+        User.update(req.session.user.id, {lang: req.params.locale}).exec(function (err, user) {
+            if (err)console.log(err);
+            res.redirect('/settings');
+            req.session.user = user;
+        });
+    }
 };
 module.exports = UserController;

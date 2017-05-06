@@ -6,26 +6,36 @@
 </div>
 <div class="col-xs-3" id="list-users" style="background-color: black; height:600px; border: 1px solid blue">
 </div>
-<form id=" form-message" data-type="message">
+<form id="form-message" data-type="message">
     <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-message" placeholder="Text Message">
+        <input type="text" class="form-control col-xs-10" id="input-message" placeholder="<%= __('text message') %>">
     </div>
 </form>
 <form id="form-img" data-type="img">
     <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-img" placeholder="Img link">
+        <input type="text" class="form-control col-xs-10" id="input-img" placeholder="<%= __('img link') %>">
     </div>
 </form>
 <form id="form-video" data-type="video">
     <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-video" placeholder="Youtube video link">
+        <input type="text" class="form-control col-xs-10" id="input-video"
+               placeholder="<%= __('youtube video link') %>">
     </div>
 </form>
 <form id="form-song-request" data-type="song-request">
     <div class="form-group">
-        <input type="text" class="form-control col-xs-10" id="input-song-request" placeholder="Deezer link">
+        <input type="text" class="form-control col-xs-10" id="input-song-request"
+               placeholder="<%= __('search music') %>">
     </div>
 </form>
+
+<!--<form id="form-word-request" data-type="word-request">-->
+<!--<div class="form-group">-->
+<!--<input type="text" class="form-control col-xs-10" id="input-word-request"-->
+<!--placeholder="<%= __('suggest word') %>">-->
+<!--</div>-->
+<!--</form>-->
+
 
 <div id="modal-tracks-choice" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -35,9 +45,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btn-close-modal" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                <button type="button" id="btn-choice-track" class="btn btn-primary">Choisir</button>
+                <button type="button" id="btn-close-modal" class="btn btn-default"
+                        data-dismiss="modal"><%= __('cancel') %></button>
+                <button type="button" id="btn-choice-track" class="btn btn-primary"><%= __('choose') %></button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<!--<btn id="btn-test">btn test</btn>-->

@@ -128,6 +128,10 @@ module.exports.routes = {
     '/confirm-track': {
         controller: 'ChatController',
         action: 'confirmTrack'
+    },
+    '/change-locale/:locale': {
+        controller: 'UserController',
+        action: 'changeLocale'
     }
 
 

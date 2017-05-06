@@ -56,6 +56,11 @@ module.exports = {
             required: true,
             defaultsTo: 0
         },
+        lang: {
+            type: 'string',
+            enum:['fr', 'en'],
+            defaultsTo: 'fr'
+        },
         game: {
             model: 'game',
             required: false
