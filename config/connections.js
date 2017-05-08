@@ -40,13 +40,13 @@ module.exports.connections = {
    * Run: npm install sails-mysql                                             *
    *                                                                          *
    ***************************************************************************/
-  someMysqlServer: {
-    adapter: 'sails-mysql',
-    host: 'localhost',
-    user: 'root', //optional
-    password: '', //optional
-    database: 'risksails' //optional
-  },
+  // someMysqlServer: {
+  //   adapter: 'sails-mysql',
+  //   host: 'localhost',
+  //   user: 'root', //optional
+  //   password: '', //optional
+  //   database: 'risksails' //optional
+  // },
 
   /***************************************************************************
    *                                                                          *
@@ -74,13 +74,14 @@ module.exports.connections = {
    *                                                                          *
    *                                                                          *
    ***************************************************************************/
-  // somePostgresqlServer: {
-  //   adapter: 'sails-postgresql',
-  //   host: 'YOUR_POSTGRES_SERVER_HOSTNAME_OR_IP_ADDRESS',
-  //   user: 'YOUR_POSTGRES_USER', // optional
-  //   password: 'YOUR_POSTGRES_PASSWORD', // optional
-  //   database: 'YOUR_POSTGRES_DB' //optional
-  // }
+  somePostgresqlServer: {
+    adapter: 'sails-postgresql',
+    host: 'ec2-54-83-205-71.compute-1.amazonaws.com',
+    user: 'ftwtzfpbmqqvof', // optional
+    port: '5432',
+    password: '0d2eddd9be38d9c175aad3ca584383f2bb33b345c13bc160f80ddce359a6e184', // optional
+    database: 'd221ierbg2s3b4' //optional
+  }
 
 
   /***************************************************************************

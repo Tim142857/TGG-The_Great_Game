@@ -13,7 +13,7 @@ var ChatController = {
             date: new Date()
         });
         var myQuery = ChatMessage.find();
-        myQuery.sort('CreatedAt DESC');
+        myQuery.sort('date DESC');
         myQuery.limit(4);
         myQuery.where({display: true});
         myQuery.populate('user').exec(function callBack(err, results) {
