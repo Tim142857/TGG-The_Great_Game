@@ -13,17 +13,17 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
-            type: 'string',
+        baseMap: {
+            model: 'baseMap',
             required: true
         },
-        nbRows: {
-            type: 'integer',
+        game: {
+            model: 'game',
             required: true
         },
-        nbColumns: {
-            type: 'integer',
-            required: true
+        cases: {
+            collection: 'case',
+            via: 'map'
         }
     }
 };

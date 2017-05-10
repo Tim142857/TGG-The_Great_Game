@@ -59,7 +59,7 @@ module.exports = {
                     res.redirect('/login')
                 } else {
                     req.addFlash('success', req.__('registration successful, you can login now!'));
-                    res.redirect('/login')
+                    res.redirect('/login');
                 }
             });
     }

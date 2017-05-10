@@ -101,10 +101,10 @@ module.exports.routes = {
         controller: 'GameController',
         action: "startGame"
     },
-    '/test': {
-        controller: 'MapController',
-        action: 'createMap'
-    },
+    // '/test': {
+    //     controller: 'MapController',
+    //     action: 'createMap'
+    // },
     '/chat': {
         controller: 'ChatController',
         action: 'startChat'
@@ -132,6 +132,17 @@ module.exports.routes = {
     '/change-locale/:locale': {
         controller: 'UserController',
         action: 'changeLocale'
+    },
+    '/insertDefaultMap': {
+        controller: 'AdminController',
+        action: 'insertDefaultMap'
+    },
+    '/insertAmeliorations': {
+        controller: 'AdminController',
+        action: 'insertAmeliorations'
+    },
+    '/insertData': {
+        view: 'insertData'
     }
 
 

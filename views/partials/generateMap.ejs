@@ -1,0 +1,31 @@
+<!--<h1>Test map</h1>-->
+
+<h3>Légende :</h3>
+<h4><%= map.name %></h4>
+<h4><%= map.baseMap %></h4>
+<h4><%= map.game %></h4>
+<table>
+    <tr>
+        <td class="neutral-case">Case neutre</td>
+    </tr>
+    <tr>
+        <td class="rock-case">Case montagne</td>
+    </tr>
+    <tr>
+        <td class="sea-case">Case mer</td>
+    </tr>
+</table>
+
+<table class="table-map">
+    <tr>
+        <% for(var i = 0; i < map.cases.length; i++) { %>
+        <% if (i % 10 == 0 && i != 0) { %>
+    </tr>
+    <tr>
+        <% } %>
+        <td class="<% if(map.cases[i].type == 'rock'){ %>rock-case<% }else if(map.cases[i].type == 'water'){ %>sea-case<% } %>"><%= map.cases[i].numCase %>
+            /<%= map.cases[i].ownedBy %></td>
+
+        <% } %>
+    </tr>
+</table>

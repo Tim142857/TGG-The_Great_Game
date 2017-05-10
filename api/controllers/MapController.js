@@ -5,28 +5,43 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-module.exports = {
+var MapController = {
 
-    createMap: function (req, res) {
-        var idGame = 1;
-        var height = 10;
-        var width = 10;
-        var numCase = 1;
-        for (var x = 0; x < height; x++) {
-            for (var y = 0; y < width; y++) {
-                var params = [];
-                params.game = idGame;
-                params.numCase = numCase;
-                params.coordX = x;
-                params.coordY = y;
-                params.isTakable = true;
+    cloneMap: function (idBaseMap, idGame) {
+        MapController.generateNewCases(idBaseMap, idGame, function (casesToInsert) {
+            // console.log(casesToInsert);
+            Case.create(casesToInsert).exec(function (err, records) {
+                if (err)console.log(err);
+            });
+        });
+    },
 
-                numCase++;
+    generateNewCases: function (idBaseMap, idGame, callback) {
+        Map.create({baseMap: idBaseMap, game: idGame}).exec(function (err, map) {
+            if (err)console.log(err);
+            BaseCase.find({baseMap: map.baseMap}).exec(function (err, baseCases) {
+                if (err)console.log(err);
+                var casesToInsert = [];
+                for (var i = 0; i < baseCases.length; i++) {
+                    var newCase = baseCases[i];
+                    var caseToInsert = {
+                        game: idGame,
+                        map: map.id,
+                        numCase: newCase.numCase,
+                        coordX: newCase.coordX,
+                        coordY: newCase.coordY,
+                        type: newCase.type,
+                        amelioration: newCase.amelioration
+                    }
+                    casesToInsert.push(caseToInsert);
+                }
 
-                Case.create(params).exec(function (err, pet) {
-                });
-            }
-        }
+                callback(casesToInsert);
+            });
+        });
+
     }
+
 };
 
+module.exports = MapController;

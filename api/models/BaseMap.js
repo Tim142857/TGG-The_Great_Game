@@ -1,5 +1,5 @@
 /**
- * Amelioration.js
+ * ModelMap.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
@@ -13,22 +13,21 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
-        delayToUse: {
-            type: 'integer',
-            required: true
-        },
-        manaCost: {
-            type: 'integer',
-            required: true
-        },
-        type: {
+        name: {
             type: 'string',
-            enum: ['bonusOff', 'bonusDef', 'bonus', 'bonusReinforcements', 'bonusProd', 'bonusRessource'],
             required: true
         },
-        value: {
+        nbRows: {
             type: 'integer',
             required: true
+        },
+        nbColumns: {
+            type: 'integer',
+            required: true
+        },
+        cases: {
+            collection: 'baseCase',
+            via: 'baseMap'
         }
     }
 };

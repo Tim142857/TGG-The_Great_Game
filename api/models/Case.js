@@ -13,6 +13,10 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
+        map: {
+            model: 'map',
+            required: true
+        },
         game: {
             model: 'game',
             required: true
@@ -33,9 +37,10 @@ module.exports = {
             type: 'integer',
             required: true,
         },
-        isTakable: {
-            type: 'boolean',
-            required: true
+        type: {
+            type: 'string',
+            required: true,
+            enum: ['takable', 'water', 'rock']
         },
         amelioration: {
             model: 'amelioration',

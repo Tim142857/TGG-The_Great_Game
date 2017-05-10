@@ -46,6 +46,9 @@ module.exports.policies = {
     ChatController: {
         'startChat': ['authenticated'],
         '*': "socketAuthenticated"
+    },
+    AdminController: {
+        '*': 'authenticatedAsAdmin'
     }
 
     /***************************************************************************

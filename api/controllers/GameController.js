@@ -10,7 +10,12 @@ module.exports = {
         Game.findOne({
             id: req.params.id
         }).populate('players').exec(function (err, game) {
-            res.view('game', {game: game})
+            if (err)console.log(err);
+            Map.findOne({game: game.id}).populate('cases').exec(function (err, map) {
+                if (err)console.log(err);
+                res.view('game', {game: game, map: map})
+            })
+
         });
     }
 };

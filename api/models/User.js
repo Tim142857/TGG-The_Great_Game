@@ -58,12 +58,22 @@ module.exports = {
         },
         lang: {
             type: 'string',
-            enum:['fr', 'en'],
+            enum: ['fr', 'en'],
             defaultsTo: 'fr'
         },
         game: {
             model: 'game',
             required: false
+        },
+        colorCase: {
+            type: 'string',
+            required: false
+        },
+        role: {
+            type: 'string',
+            required: true,
+            enum: ['admin', 'player'],
+            defaultsTo: 'player'
         },
         // override default toJSON
         toJSON: function () {

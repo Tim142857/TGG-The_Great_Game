@@ -47,29 +47,37 @@ var UserController = {
                 UserController.searchPendingPlayer(req.session.user.id, function (record) {
                         //if a player available found
                         if (record != null) {
+                            //change status of the 2 players in in-game
                             User.update(req.session.user.id, {state: 'in-game'}).exec(function afterwards(err, updated) {
                                 User.update(record.id, {state: 'in-game'}).exec(function afterwards(err, updated) {
+
                                     Game.create().exec(function (err, game) {
-                                        // console.log(game);
-                                        // console.log('user 1:' + req.session.user.id);
-                                        // console.log('user 2:' + record.id);
+                                        if (err)console.log(err);
+                                        //Create clone of a map. Default idBaseMap=1 => 'default map'
+                                        //Second parameter id of the game just created
+                                        sails.controllers.map.cloneMap(1, game.id, function (err) {
+                                            if (err)console.log(err);
+                                        });
+
                                         game.players.add(req.session.user.id);
                                         game.players.add(record.id);
-
-                                        game.save(function (err) {
-                                            if (err) {
-                                                return res.serverError(err);
-                                            }
-                                            Game.findOne({id: game.id}).populate('players').exec(function (err, game) {
+                                        Map.findOne({game: game.id}).exec(function (err, map) {
+                                            game.map = map;
+                                            if (err)console.log(err);
+                                            game.save(function (err) {
                                                 if (err) {
                                                     return res.serverError(err);
                                                 }
-                                                //Start of the game
-                                                var destination = '/game/' + game.id;
-                                                console.log(game.players);
-                                                sails.sockets.broadcast([newSocket, record.socket], 'redirect', destination);
-                                            });
+                                                Game.findOne({id: game.id}).populate('players').exec(function (err, game) {
+                                                    if (err) {
+                                                        return res.serverError(err);
+                                                    }
+                                                    //Start of the game
+                                                    var destination = '/game/' + game.id;
+                                                    sails.sockets.broadcast([newSocket, record.socket], 'redirect', destination);
+                                                });
 
+                                            });
                                         });
 
                                     });
