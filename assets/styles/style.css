@@ -102,17 +102,33 @@ body {
     display: flex;
 }
 
-.table-map td {
+.table-map {
+    align: center;
+}
+
+.case {
     height: 60px;
     width: 60px;
     background-color: white;
     border: 1px solid blue;
 }
 
+.case {
+    background-size: cover;
+}
+
 .sea-case {
-    background-image: url('../images/sea.jpg');
+    background-image: url('../images/background-sea.png');
 }
 
 .rock-case {
-    background-image: url('../images/moutain.jpg');
+    background-image: url('../images/background-mountain.png');
+}
+
+.horizontal-bridge {
+    background-image: url('../images/horizontal-bridge.png');
+}
+
+.vertical-bridge {
+    background-image: url('../images/vertical-bridge.png');
 }

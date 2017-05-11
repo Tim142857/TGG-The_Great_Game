@@ -7,38 +7,46 @@
 
 module.exports = {
 
-  attributes: {
-    id: {
-      type: 'integer',
-      primaryKey: true,
-      autoIncrement: true
-    },
-    baseMap: {
-      model: 'baseMap',
-      required: true
-    },
-    numCase: {
-      type: 'integer',
-      required: true
-    },
-    coordX: {
-      type: 'integer',
-      required: true
-    },
-    coordY: {
-      type: 'integer',
-      required: true,
-    },
-    type: {
-      type: 'string',
-      required: true,
-      enum: ['takable', 'water', 'rock']
-    },
-    amelioration: {
-      model: 'amelioration',
-      required: false
+    attributes: {
+        id: {
+            type: 'integer',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        baseMap: {
+            model: 'baseMap',
+            required: true
+        },
+        numCase: {
+            type: 'integer',
+            required: true
+        },
+        coordX: {
+            type: 'integer',
+            required: true
+        },
+        coordY: {
+            type: 'integer',
+            required: true,
+        },
+        type: {
+            type: 'string',
+            required: true,
+            enum: ['takable', 'water', 'rock', 'bridge']
+        },
+        horizontalBridge: {
+            type: 'boolean'
+        },
+        amelioration: {
+            model: 'amelioration',
+            required: false
+        },
+        unitMax: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 20
+        }
     }
-  }
 };
 
 

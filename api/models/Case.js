@@ -40,11 +40,19 @@ module.exports = {
         type: {
             type: 'string',
             required: true,
-            enum: ['takable', 'water', 'rock']
+            enum: ['takable', 'water', 'rock', 'bridge']
+        },
+        horizontalBridge: {
+            type: 'boolean'
         },
         amelioration: {
             model: 'amelioration',
             required: false
+        },
+        unitMax: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 20
         },
         units: {
             collection: 'unit',

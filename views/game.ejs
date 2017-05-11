@@ -1,13 +1,8 @@
-<h1>Début de la game</h1>
-
-<!--<p>Id de la game: <%= game.id %></p>-->
-<!--<h2>Joueurs de la partie:</h2>-->
-<!--<p>-->
-    <!--<% game.players.forEach(function(elm, index) { %>-->
-    <!--player <%- index %>:<br/>-->
-    <!--id: <%- elm.id %><br/>-->
-    <!--name: <%- elm.name %><br/><br/>-->
-    <!--<% }); %>-->
-<!--</p>-->
-
-<%- partial('./partials/generateMap.ejs', {map: map}) %>
+<script>
+    <%- partial('./partials/client-js/game.js') %>
+</script>
+<div class="row">
+    <div class="col-xs-offset-2 col-xs-8">
+        <%- partial('./partials/generateMap.ejs', {map: map}) %>
+    </div>
+</div>

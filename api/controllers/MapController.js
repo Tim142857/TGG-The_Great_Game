@@ -31,11 +31,11 @@ var MapController = {
                         coordX: newCase.coordX,
                         coordY: newCase.coordY,
                         type: newCase.type,
+                        horizontalBridge: newCase.horizontalBridge,
                         amelioration: newCase.amelioration
                     }
                     casesToInsert.push(caseToInsert);
                 }
-
                 callback(casesToInsert);
             });
         });

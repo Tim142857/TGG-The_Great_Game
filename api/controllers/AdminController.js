@@ -17,13 +17,12 @@ var AdminController = {
                     BaseMap.findOne(1).populate('cases').exec(function (err, map) {
                         if (err)console.log(err);
 
-                        console.log('length:' + map.cases.length);
+                        // console.log('length:' + map.cases.length);
 
                         map.cases.sort(function (a, b) {
                             return a.numCase - b.numCase;
                         });
-                        // console.log(map.cases);
-                        // res.view('testMap', {map: map});
+                        res.redirect('/insertData');
                     });
                 });
 
@@ -41,31 +40,31 @@ var AdminController = {
             14: 'water',
             15: 'water',
             16: 'water',
-            24: 'water',
+            24: 'bridge',
             26: 'water',
             34: 'water',
-            36: 'water',
-            41: 'water',
+            36: 'bridge',
+            41: 'bridge',
             42: 'water',
             43: 'water',
             44: 'water',
             46: 'water',
-            54: 'water',
+            54: 'bridge',
             56: 'water',
             64: 'water',
-            65: 'water',
+            65: 'bridge',
             66: 'water',
             74: 'water',
             76: 'water',
             77: 'water',
-            78: 'water',
+            78: 'bridge',
             79: 'water',
             80: 'water',
             84: 'water',
             85: 'water',
             86: 'water',
             87: 'water',
-            97: 'water',
+            97: 'bridge',
             22: 'rock',
             32: 'rock',
             47: 'rock',
@@ -84,10 +83,17 @@ var AdminController = {
         for (var x = 0; x < height; x++) {
             for (var y = 0; y < width; y++) {
                 var isTakable = 'takable';
+                var horizontalBridge = null;
                 var amelioration = null;
                 for (var key in casesNotTakable) {
                     if (key == numCase) {
                         isTakable = casesNotTakable[key];
+                        if (numCase == 24 || numCase == 36 || numCase == 54 || numCase == 97) {
+                            horizontalBridge = true;
+                        }
+                        if (numCase == 41 || numCase == 65 || numCase == 78) {
+                            horizontalBridge = false;
+                        }
                     }
                 }
                 for (var key in casesWithAmeliorations) {
@@ -102,6 +108,7 @@ var AdminController = {
                     coordX: x,
                     coordY: y,
                     type: isTakable,
+                    horizontalBridge: horizontalBridge,
                     amelioration: amelioration
                 };
                 casesToInsert.push(params);
@@ -209,11 +216,11 @@ var AdminController = {
                 console.log(err);
                 req.addFlash('error', err);
             }
-            req.addFlash('success', 'insertion des améliorations ok');
+            // req.addFlash('success', 'insertion des améliorations ok');
             res.redirect('/insertData');
         })
 
-    }
+    },
 
 };
 
