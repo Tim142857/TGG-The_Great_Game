@@ -23,7 +23,8 @@ module.exports = {
         },
         ownedBy: {
             model: 'user',
-            required: false
+            required: false,
+            defaultsTo: null
         },
         numCase: {
             type: 'integer',

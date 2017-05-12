@@ -15,8 +15,17 @@ horizontal-bridge
 vertical-bridge
 <% }else{ %>
 neutral-case
-<% } %>
-">
+<% } %>"
+
+                <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
+            style="background-color:<%= cases[i].ownedBy.colorCase %>;"
+                <% } %>
+
+        >
+            <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
+            <%= cases[i].ownedBy.name %>
+            <% } %>
+            <br/>
             <%= cases[i].units.length %>/<%= cases[i].unitMax %>
         </td>
 

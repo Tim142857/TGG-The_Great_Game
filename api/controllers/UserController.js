@@ -48,10 +48,18 @@ var UserController = {
                         //if a player available found
                         if (record != null) {
                             //change status of the 2 players in in-game
-                            User.update(req.session.user.id, {state: 'in-game'}).exec(function afterwards(err, updated) {
-                                User.update(record.id, {state: 'in-game'}).exec(function afterwards(err, updated) {
+                            User.update(req.session.user.id, {
+                                state: 'in-game',
+                                colorCase: 'red'
+                            }).exec(function afterwards(err, updated) {
+                                if (err)console.log(err);
+                                User.update(record.id, {
+                                    state: 'in-game',
+                                    colorCase: 'green'
+                                }).exec(function afterwards(err, updated) {
+                                    if (err)console.log(err);
 
-                                    Game.create().exec(function (err, game) {
+                                    Game.create({turnPlayer: req.session.user.id}).exec(function (err, game) {
                                         if (err)console.log(err);
                                         //Create clone of a map. Default idBaseMap=1 => 'default map'
                                         //Second parameter id of the game just created
