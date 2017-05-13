@@ -115,7 +115,7 @@ module.exports.routes = {
     },
     '/chat-authenticate': {
         controller: 'ChatController',
-        action: 'authenticate'
+        action: 'ChatAuthenticate'
     },
     '/send-poke': {
         controller: 'ChatController',
@@ -143,7 +143,16 @@ module.exports.routes = {
     },
     '/insertData': {
         view: 'insertData'
+    },
+    '/game-authenticate': {
+        controller: 'UserController',
+        action: 'GameAuthenticate'
+    },
+    '/move-units': {
+        controller: 'GameController',
+        action: 'moveUnits'
     }
+
 
 
     /***************************************************************************

@@ -66,6 +66,9 @@ var UserController = {
                                         sails.controllers.map.cloneMap(1, game.id, function (err) {
                                             if (err)console.log(err);
                                         });
+                                        User.update({id:req.session.user.id,game: game.id}).exec(function (err, user) {
+                                            req.session.user = user;
+                                        });
 
                                         game.players.add(req.session.user.id);
                                         game.players.add(record.id);
@@ -135,6 +138,18 @@ var UserController = {
             res.redirect('/settings');
             req.session.user = user;
         });
-    }
+    },
+
+    GameAuthenticate: function (req, res) {
+
+        var newSocket = sails.sockets.getId(req);
+        req.session.user.socket = newSocket;
+        User.update(req.session.user.id, {socket: newSocket}).exec(function afterwards(err, updated) {
+            if (err) {
+                console.log(err);
+                res.send({success: false, error: err, message: 'Authentification échouée, rechargez la page svp'});
+            }
+        });
+    },
 };
 module.exports = UserController;

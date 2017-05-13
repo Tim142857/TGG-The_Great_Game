@@ -133,7 +133,7 @@ var ChatController = {
 
     },
 
-    authenticate: function (req, res) {
+    ChatAuthenticate: function (req, res) {
 
         var newSocket = sails.sockets.getId(req);
         req.session.user.socketChat = newSocket;

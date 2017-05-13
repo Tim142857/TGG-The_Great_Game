@@ -22,8 +22,11 @@ module.exports = {
             required: true
         },
         type: {
-            type: 'string',
-            enum: ['bonusOff', 'bonusDef', 'bonus', 'bonusReinforcements', 'bonusProd', 'bonusRessource'],
+            model: 'typeAmelioration',
+            required: true
+        },
+        level: {
+            type: 'integer',
             required: true
         },
         value: {

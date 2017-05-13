@@ -1,5 +1,5 @@
 body {
-    color: #C0C0C0;
+    color: #696969;
     background-color: rgb(32, 32, 32);
 }
 
@@ -113,6 +113,14 @@ body {
     border: 1px solid blue;
 }
 
+.case:hover, .case-selected {
+    -webkit-transform: scale(1.4, 1.4);
+    -moz-transform: scale(1.4, 1.4);
+    -o-transform: scale(1.4, 1.4);
+    -ms-transform: scale(1.4, 1.4);
+    transform: scale(1.4, 1.4);
+}
+
 .case {
     background-size: cover;
 }
@@ -131,4 +139,34 @@ body {
 
 .vertical-bridge {
     background-image: url('../images/vertical-bridge.png');
+}
+
+#infos-game {
+    height: 250px;
+    padding: 10px;
+    border: 1px solid blue;
+}
+
+.not-researched {
+    background-color: #DCDCDC;
+}
+
+.progressBar {
+    width: 200px;
+    height: 22px;
+    border: 1px solid #111;
+    background-color: #292929;
+}
+
+.progressBar div {
+    height: 100%;
+    color: #fff;
+    text-align: right;
+    line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #0099ff;
+}
+
+.table {
+    text-align: center;
 }

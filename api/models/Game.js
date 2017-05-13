@@ -15,7 +15,8 @@ module.exports = {
         },
         turnNb: {
             type: 'integer',
-            // required: true
+            required: true,
+            defaultsTo: 1
         },
         map: {
             model: 'map',

@@ -25,7 +25,13 @@ module.exports = {
                         session: req.session.sid
                     }).exec(function afterwards(err, updated) {
                     });
-                    res.redirect('/homepagePlayer');
+                    //check si une game en cours
+                    if (typeof(user.game) == 'number') {
+                        res.redirect('/game/' + user.game);
+                    } else {
+                        res.redirect('/homepagePlayer');
+                    }
+
                 });
             }
         })(req, res);

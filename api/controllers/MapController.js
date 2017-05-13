@@ -30,7 +30,9 @@ var MapController = {
                             if (typeof(records[indexCase1]) == 'undefined') {
                                 console.log('pb index sur:' + indexCase1);
                             }
-                        } while (records[indexCase1].type != 'takable' || records[indexCase1].ownedBy != null)
+                            // console.log(indexCase1);
+                            // console.log(typeof(records[indexCase1].amelioration));
+                        } while (records[indexCase1].type != 'takable' || records[indexCase1].ownedBy != null || records[indexCase1].amelioration != null)
                         records[indexCase1].ownedBy = game.players[i];
                         records[indexCase1].save(function (err) {
                             if (err)console.log(err);

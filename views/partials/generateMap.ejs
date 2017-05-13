@@ -1,32 +1,40 @@
 <table class="table table-map">
     <tr>
         <% for(var i = 0; i < cases.length; i++) { %>
+
         <% if (i % 10 == 0 && i != 0) { %>
     </tr>
     <tr>
         <% } %>
-        <td class="case <% if(cases[i].type == 'rock'){ %>
-        rock-case
-<% }else if(cases[i].type == 'water'){ %>
-sea-case
-<% } else if(cases[i].type == 'bridge' && cases[i].horizontalBridge){ %>
-horizontal-bridge
-<% }else if(cases[i].type == 'bridge' && cases[i].horizontalBridge == false) { %>
-vertical-bridge
-<% }else{ %>
-neutral-case
-<% } %>"
 
-                <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
-            style="background-color:<%= cases[i].ownedBy.colorCase %>;"
-                <% } %>
-
-        >
-            <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
-            <%= cases[i].ownedBy.name %>
+        <td class="case <% if(cases[i].type == 'rock'){ %>rock-case<% }else if(cases[i].type == 'water'){ %>sea-case<% } else if(cases[i].type == 'bridge' && cases[i].horizontalBridge){ %>horizontal-bridge<% }else if(cases[i].type == 'bridge' && cases[i].horizontalBridge == false) { %>vertical-bridge<% }else{ %>neutral-case<% } %>"
+            <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>style="background-color:<%= cases[i].ownedBy.colorCase %>;"
             <% } %>
-            <br/>
-            <%= cases[i].units.length %>/<%= cases[i].unitMax %>
+            data-ownedBy=<% if(typeof(cases[i].ownedBy) != 'undefined'){ %>'<%= cases[i].ownedBy.id %>'
+        <% }else{ %>
+        'null'
+        <% } %>
+        data-idCase="<%= cases[i].id %>"
+        >
+
+        <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
+        <%= cases[i].ownedBy.name %>
+        <% } %>
+        <br/>
+        <% if(cases[i].type == 'takable'){ %>
+        <%= cases[i].units.length %>/<%= cases[i].unitMax %>
+        <% } %>
+        <% if(typeof(cases[i].amelioration) != 'undefined'){ %>
+        <br/>
+        <img src="/images/dollar.png" style="height:33%; width:auto">
+        <% if(cases[i].amelioration.id == 32){ %>
+        <img src="/images/dollar.png" style="height:33%; width:auto">
+        <% } %>
+        <% } %>
+        <br/>
+        id:<%= cases[i].id %>
+        <br/>
+        numCase:<%= cases[i].numCase %>
         </td>
 
         <% } %>

@@ -48,7 +48,8 @@ module.exports = {
         },
         amelioration: {
             model: 'amelioration',
-            required: false
+            required: false,
+            defaultsTo: null
         },
         unitMax: {
             type: 'integer',

@@ -1,0 +1,44 @@
+<% for(var i = 0; i < types.length; i++){ %>
+<h3 class="table-research-title"><%= types[i].name %></h3>
+<!--<p style="font-style: italic"><%= types[i].description %></p>-->
+<table class="table table-research hidden" style="background-color:white">
+    <tr>
+        <td></td>
+        <td>Level</td>
+        <td>Cout en mana</td>
+        <td>Delai de recherche</td>
+        <td>Valeur</td>
+        <td>Progrès</td>
+    </tr>
+
+    <% for(var j = 0; j < types[i].ameliorations.length; j++){ %>
+
+    <!--check si l'amelioration est effectuée ou en cours dans la liste de bonus du joueur-->
+    <% var researched = false; %>
+    <% var pourcentage = 0; %>
+    <% var bonusActual = bonus.filter(function (bonus) {
+        return bonus.amelioration.id == types[i].ameliorations[j].id;
+    })[0] %>
+
+    <!--Si oui, je recupère l'avancée(tour actuel comparé au tour ou ca été lancé-->
+    <% if(bonusActual){ %>
+    <% researched = true; %>
+    <% pourcentage = Math.floor((turn - bonusActual.startTurn) / bonusActual.amelioration.delayToUse * 100) %>
+    <% } %>
+
+    <tr data-idamelioration="<%= types[i].ameliorations[j].id %>" data-pourcentage="<%= pourcentage %>"
+        class="<% if(researched){ %>researched<% }else{ %>not-researched<% } %>">
+        <td class="lvl-up-amelioration">Lancer</td>
+        <td><%= types[i].ameliorations[j].level %></td>
+        <td><%= types[i].ameliorations[j].manaCost %></td>
+        <td><%= types[i].ameliorations[j].delayToUse %></td>
+        <td><%= types[i].ameliorations[j].value %></td>
+        <td>
+            <div class="progressBar">
+                <div></div>
+            </div>
+        </td>
+    </tr>
+    <% } %>
+</table><br/>
+<% } %>
