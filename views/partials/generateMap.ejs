@@ -22,7 +22,8 @@
         <% } %>
         <br/>
         <% if(cases[i].type == 'takable'){ %>
-        <%= cases[i].units.length %>/<%= cases[i].unitMax %>
+        <span class="unitsActual"><%= cases[i].units.length %></span>/<span
+                class="unitsMax"><%= cases[i].unitMax %></span>
         <% } %>
         <% if(typeof(cases[i].amelioration) != 'undefined'){ %>
         <br/>

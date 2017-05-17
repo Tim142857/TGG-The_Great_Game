@@ -35,7 +35,8 @@ module.exports.policies = {
         "rules": "authenticated",
         "ranking": "authenticated",
         "play": true,
-        "change-locale": true
+        "change-locale": true,
+        "gameAuthenticate": true
     },
     AuthController: {
         '*': true,

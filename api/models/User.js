@@ -75,6 +75,14 @@ module.exports = {
             enum: ['admin', 'player'],
             defaultsTo: 'player'
         },
+        cases: {
+            collection: 'case',
+            via: 'ownedBy'
+        },
+        reinforcementsLeft: {
+            type: 'integer',
+            defaultsTo: 0
+        },
         // override default toJSON
         toJSON: function () {
             var obj = this.toObject();

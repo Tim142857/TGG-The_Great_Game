@@ -5,23 +5,48 @@
     <div id="infos-game">
         <p>Tour n°<%= game.turnNb %></p>
         <% var turnPlayer = game.players.filter(function (elm) {
-            return game.turnPlayer.id != elm.id
+            return game.turnPlayer == elm.id
         })[0] %>
         <p id="turn-player" data-turnPlayer-name="<%= turnPlayer.name %>" data-turnPlayer-id="<%= turnPlayer.id %>">
             C'est au tour de <%= turnPlayer.name %></p>
+        <p class="hidden" id="reinforcements-time"><%= game.reinforcementsTime %></p>
         <p>Adversaire:
-            <%= game.players.filter(function (elm) {
+            <% var ennemy = game.players.filter(function (elm) {
                 return req.session.user.id != elm.id
-            })[0].name %>
+            })[0] %>
+            <%= ennemy.name %>
         </p>
+        <div id="infos-en-cours">
+            <p id="reinforcements-infos" <% if (game.reinforcementsTime == false){ %>class="hidden"
+                    <% } %>
+            >Il vous reste <span id="reinforcements-left">
+                    <% if(game.reinforcementsTime){ %>
+                    <%= req.session.user.reinforcementsLeft %>
+                    <% } %>
+                </span> à placer
+            </p>
+        </div>
+        <ul class="hidden">
+            <% game.players.forEach(function(elm, index){ %>
+            <li data-infos-player='<%= elm.id %>' data-color="<%= elm.colorCase %>"><%= elm.id %></li>
+            <% }) %>
+        </ul>
         <p class="hidden" id="myId"><%= req.session.user.id %></p>
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-12 col-md-7">
+    <div class="col-xs-12"><a id="btn-end-turn" href="" class="btn btn-info"
+                              role="button">
+            <% if(game.turnPlayer == req.session.user.id){ %>
+            Fin de tour
+            <% }else{ %>
+            Tour de l'adversaire
+            <% } %>
+        </a></div>
+    <div class="col-xs-12 col-md-8">
         <%- partial('./partials/generateMap.ejs', {map: map}) %>
     </div>
-    <div class="col-xs-12 col-md-5">
+    <div class="col-xs-12 col-md-4">
         <%- partial('./partials/generateResearch.ejs', {types: types, bonus: bonus, turn: game.turnNb}) %>
     </div>
 </div>

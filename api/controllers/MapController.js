@@ -37,7 +37,7 @@ var MapController = {
                         records[indexCase1].save(function (err) {
                             if (err)console.log(err);
                         });
-                        var unitstoCreate = [{case: records[indexCase1].id}, {case: records[indexCase1].id}, {case: records[indexCase1].id}];
+                        var unitstoCreate = [{case: records[indexCase1].id}, {case: records[indexCase1].id}, {case: records[indexCase1].id}, {case: records[indexCase1].id}];
                         Unit.create(unitstoCreate).exec(function (err, units) {
                             if (err)console.log(err);
                         });

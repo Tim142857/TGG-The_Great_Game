@@ -146,11 +146,19 @@ module.exports.routes = {
     },
     '/game-authenticate': {
         controller: 'UserController',
-        action: 'GameAuthenticate'
+        action: 'gameAuthenticate'
     },
     '/move-units': {
         controller: 'GameController',
         action: 'moveUnits'
+    },
+    '/end-turn/:id': {
+        controller: 'GameController',
+        action: 'endTurn'
+    },
+    '/add-unit/:idCase': {
+        controller: 'GameController',
+        action: 'addUnit'
     }
 
 

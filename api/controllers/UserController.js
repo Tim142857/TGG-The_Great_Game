@@ -55,18 +55,21 @@ var UserController = {
                                 if (err)console.log(err);
                                 User.update(record.id, {
                                     state: 'in-game',
-                                    colorCase: 'green'
+                                    colorCase: 'grey'
                                 }).exec(function afterwards(err, updated) {
                                     if (err)console.log(err);
 
-                                    Game.create({turnPlayer: req.session.user.id}).exec(function (err, game) {
+                                    Game.create({
+                                        turnPlayer: req.session.user.id,
+                                        firstPlayer: req.session.user.id
+                                    }).exec(function (err, game) {
                                         if (err)console.log(err);
                                         //Create clone of a map. Default idBaseMap=1 => 'default map'
                                         //Second parameter id of the game just created
                                         sails.controllers.map.cloneMap(1, game.id, function (err) {
                                             if (err)console.log(err);
                                         });
-                                        User.update({id:req.session.user.id,game: game.id}).exec(function (err, user) {
+                                        User.update({id: req.session.user.id, game: game.id}).exec(function (err, user) {
                                             req.session.user = user;
                                         });
 
@@ -140,15 +143,22 @@ var UserController = {
         });
     },
 
-    GameAuthenticate: function (req, res) {
-
+    gameAuthenticate: function (req, res) {
         var newSocket = sails.sockets.getId(req);
         req.session.user.socket = newSocket;
-        User.update(req.session.user.id, {socket: newSocket}).exec(function afterwards(err, updated) {
+        User.update(req.session.user.id, {socket: newSocket}).exec(function afterwards(err, users) {
+            req.session.user = users[0];
             if (err) {
                 console.log(err);
                 res.send({success: false, error: err, message: 'Authentification échouée, rechargez la page svp'});
             }
+            Game.findOne(req.session.user.game).populate('players').exec(function (err, game) {
+                if (err)console.log(err);
+                var roomName = 'room-game-' + game.id;
+                sails.sockets.join(newSocket, roomName, function (err) {
+                    if (err)console.log(err);
+                });
+            });
         });
     },
 };

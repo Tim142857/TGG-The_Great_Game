@@ -26,9 +26,18 @@ module.exports = {
             model: 'user',
             // required: true
         },
+        firstPlayer: {
+            model: 'user',
+            required: true
+        },
         players: {
             collection: 'user',
             via: 'game'
+        },
+        reinforcementsTime: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: false
         }
     }
 };
