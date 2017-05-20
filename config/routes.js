@@ -159,6 +159,10 @@ module.exports.routes = {
     '/add-unit/:idCase': {
         controller: 'GameController',
         action: 'addUnit'
+    },
+    '/update-after-reinforcements': {
+        controller: 'GameController',
+        action: 'updateAfterReinforcements'
     }
 
 

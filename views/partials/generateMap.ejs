@@ -17,10 +17,6 @@
         data-idCase="<%= cases[i].id %>"
         >
 
-        <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
-        <%= cases[i].ownedBy.name %>
-        <% } %>
-        <br/>
         <% if(cases[i].type == 'takable'){ %>
         <span class="unitsActual"><%= cases[i].units.length %></span>/<span
                 class="unitsMax"><%= cases[i].unitMax %></span>
@@ -33,9 +29,15 @@
         <% } %>
         <% } %>
         <br/>
-        id:<%= cases[i].id %>
-        <br/>
-        numCase:<%= cases[i].numCase %>
+        <div class="hidden">
+            <% if(typeof(cases[i].ownedBy) != 'undefined'){ %>
+            <%= cases[i].ownedBy.name %>
+            <% } %>
+            <br/>
+            id:<%= cases[i].id %>
+            <br/>
+            numCase:<%= cases[i].numCase %>
+        </div>
         </td>
 
         <% } %>

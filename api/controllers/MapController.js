@@ -44,7 +44,9 @@ var MapController = {
                     }
                 });
             });
+
         });
+
     },
 
     generateNewCases: function (idBaseMap, idGame, callback) {

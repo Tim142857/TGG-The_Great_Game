@@ -38,6 +38,10 @@ module.exports = {
             type: 'boolean',
             required: true,
             defaultsTo: false
+        },
+        winner: {
+            model: 'user',
+            required: false
         }
     }
 };

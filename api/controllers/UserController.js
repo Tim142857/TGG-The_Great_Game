@@ -7,7 +7,12 @@
 
 var UserController = {
     homepagePlayer: function (req, res) {
-        res.view('homepagePlayer');
+        User.findOne(req.session.user.id).exec(function (err, user) {
+            if (err)console.log(err);
+
+            req.session.user = user;
+            res.view('homepagePlayer');
+        });
     },
 
     profile: function (req, res) {
@@ -34,7 +39,6 @@ var UserController = {
         } else {
             //Check if the player is alrdy waiting somewhere
             if (oldSocket != null) {
-                // console.log('deja co');
                 var destination = '/logout';
                 sails.sockets.broadcast(oldSocket, 'redirect', destination);
             }
@@ -43,7 +47,6 @@ var UserController = {
                 sails.sockets.broadcast(newSocket, 'pending');
 
                 // check if a player is waiting for a game
-                console.log('id user actuel:' + req.session.user.id);
                 UserController.searchPendingPlayer(req.session.user.id, function (record) {
                         //if a player available found
                         if (record != null) {
@@ -119,15 +122,12 @@ var UserController = {
     searchPendingPlayer: function (id, callback) {
         User.find({state: 'pending'}).exec(function (err, records) {
             var record;
-            // console.log('id actuel:' + id);
-            // console.log(records);
             records.forEach(function (elm) {
                 if (elm.id != id) {
                     record = elm;
                     return false;
                 }
             });
-            // console.log(record);
             if (record == 'undefined' || typeof(record) == 'undefined') {
                 record = null;
             }

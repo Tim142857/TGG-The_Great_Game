@@ -113,14 +113,25 @@ $(document).ready(function () {
     });
 
     io.socket.on('end-turn', function (data) {
+        $('#btn-end-turn').text("Reinforcements time");
         alert('Reinforcements time');
         $('#reinforcements-infos').removeClass('hidden');
         $('#reinforcements-left').text(data.nbReinforcements);
+
         reinforcementsTime = true;
     });
+
     io.socket.on('reinforcementsTime-ended', function (data) {
+        io.socket.get('/update-after-reinforcements', null, function (res) {
+
+        });
         $('#reinforcements-infos').addClass('hidden');
         reinforcementsTime = false;
+    });
+
+    io.socket.on('win', function (data) {
+        alert(data.winner + ' a gagné la partie!');
+        window.location.replace('/homepagePlayer');
     });
 
     $('#btn-end-turn').on('click', function (e) {
@@ -130,7 +141,6 @@ $(document).ready(function () {
     });
 
     function updateCase(idCase, idPlayer, unitsLength) {
-        console.log('update received');
         var endTD = $(".case[data-idcase='" + idCase + "']");
 
         //Maj units

@@ -60,6 +60,15 @@ module.exports = {
             collection: 'unit',
             via: 'case'
         }
+    },
+    afterDestroy: function (destroyedRecords, cb) {
+        // Destroy any child whose teacher has an ID of one of the
+        // deleted teacher models
+        destroyedRecords.forEach(function (elm, index) {
+            Unit.destroy({case: elm.id}).exec(function (err) {
+                if (err)console.log(err);
+            })
+        });
     }
 };
 
