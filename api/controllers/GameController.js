@@ -681,6 +681,10 @@ var GameController = {
                 req.session.newUnits = [];
             });
         }
+    },
+
+    test: function (req, res) {
+        
     }
 };
 
