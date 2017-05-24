@@ -14,11 +14,11 @@ $(document).ready(function () {
         $("h1").append("<p>En attente d'un adversaire</p>");
     });
 
-    $('#btn-play').on('click', function () {
-        if (window.location.pathname != 'homepagePlayer') {
-            window.location.href = '/homepagePlayer';
-        }
-    });
+    // $('#btn-play').on('click', function () {
+    //     if (window.location.pathname != 'homepagePlayer') {
+    //         window.location.href = '/homepagePlayer';
+    //     }
+    // });
 
 
 });

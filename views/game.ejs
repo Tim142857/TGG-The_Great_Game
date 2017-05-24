@@ -16,6 +16,9 @@
             })[0] %>
             <%= ennemy.name %>
         </p>
+        <p>
+            Ressources: <span id="my-ressources"><%= req.session.user.ressourceQt %></span>
+        </p>
         <div id="infos-en-cours">
             <p id="reinforcements-infos" <% if (game.reinforcementsTime == false){ %>class="hidden"
                     <% } %>
@@ -35,18 +38,29 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-xs-12"><a id="btn-end-turn" href="" class="btn btn-info"
+    <div class="col-xs-11"><a id="btn-end-turn" href="" class="btn btn-info"
                               role="button">
+            <% if(game.reinforcementsTime == true){ %>
+            Reinforcements time
+            <% }else{ %>
             <% if(game.turnPlayer == req.session.user.id){ %>
             Fin de tour
             <% }else{ %>
             Tour de l'adversaire
             <% } %>
-        </a></div>
-    <div class="col-xs-12 col-md-6 col-md-offset-3">
+            <% } %>
+        </a>
+    </div>
+    <div class="col-xs-1">
+        <a id="show-research" class="closed" href=""><img style="height:30px; width:auto;" src="/images/arrow-left.png"
+                                                          alt="arrow-left"></img></a>
+    </div>
+</div>
+<div class="row">
+    <div id="part-game" class="col-xs-12 col-md-6 col-md-offset-3">
         <%- partial('./partials/generateMap.ejs', {map: map}) %>
     </div>
-    <div class="col-xs-12 col-md-6 hidden">
+    <div id="part-research" class="col-xs-12 col-md-6 hidden">
         <%- partial('./partials/generateResearch.ejs', {types: types, bonus: bonus, turn: game.turnNb}) %>
     </div>
 </div>

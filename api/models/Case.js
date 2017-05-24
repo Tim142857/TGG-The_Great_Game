@@ -51,10 +51,10 @@ module.exports = {
             required: false,
             defaultsTo: null
         },
-        unitMax: {
+        unitsMax: {
             type: 'integer',
             required: true,
-            defaultsTo: 20
+            defaultsTo: 6
         },
         units: {
             collection: 'unit',

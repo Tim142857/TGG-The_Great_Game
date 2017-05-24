@@ -53,12 +53,14 @@ var UserController = {
                             //change status of the 2 players in in-game
                             User.update(req.session.user.id, {
                                 state: 'in-game',
-                                colorCase: 'red'
+                                colorCase: 'red',
+                                ressourceQt: 0
                             }).exec(function afterwards(err, updated) {
                                 if (err)console.log(err);
                                 User.update(record.id, {
                                     state: 'in-game',
-                                    colorCase: 'grey'
+                                    colorCase: 'grey',
+                                    ressourceQt: 0
                                 }).exec(function afterwards(err, updated) {
                                     if (err)console.log(err);
 

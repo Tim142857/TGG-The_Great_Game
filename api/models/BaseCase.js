@@ -41,10 +41,10 @@ module.exports = {
             model: 'amelioration',
             required: false
         },
-        unitMax: {
+        unitsMax: {
             type: 'integer',
             required: true,
-            defaultsTo: 20
+            defaultsTo: 6
         }
     }
 };

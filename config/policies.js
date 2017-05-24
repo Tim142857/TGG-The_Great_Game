@@ -42,7 +42,8 @@ module.exports.policies = {
         '*': true,
     },
     GameController: {
-        '*': true
+        '*': true,
+        'startGame': 'gameAuthenticated'
     },
     ChatController: {
         'startChat': ['authenticated'],

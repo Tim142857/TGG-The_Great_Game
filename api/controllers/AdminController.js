@@ -6,6 +6,7 @@
  */
 
 var AdminController = {
+
     insertDefaultMap: function (req, res) {
         BaseMap.create({name: 'Default Map', nbRows: 10, nbColumns: 10}).exec(function (err, baseMap) {
             if (err)console.log(err);

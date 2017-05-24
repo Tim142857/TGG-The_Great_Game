@@ -151,6 +151,28 @@ body {
     background-color: #DCDCDC;
 }
 
+@keyframes red-animate {
+    0% {
+        background-color: #79A5E8;
+    }
+    50% {
+        background-color: rgb(0, 0, 255);
+    }
+}
+
+.researched {
+    background-color: rgb(0, 0, 255);
+}
+
+.in-research {
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+    -webkit-animation-iteration-count: infinite; /* Safari 4.0 - 8.0 */
+    animation-name: red-animate;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+}
+
 .progressBar {
     width: 200px;
     height: 22px;

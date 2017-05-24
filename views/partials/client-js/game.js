@@ -24,12 +24,14 @@ $(document).ready(function () {
         progress(pourcentage, $(this));
     });
 
-
     function progress(percent, $element) {
+        percent = parseInt(percent);
+        // console.log('--------------------------------');
+        // console.log('percent(' + typeof(percent) + '): ' + percent);
+        // console.log('$element(' + typeof($element) + '): ' + $element);
         var progressBarWidth = percent * $element.width() / 100;
-        $element.find('div').animate({width: progressBarWidth}, 500).html(percent + "% ");
+        $element.find('div').animate({width: progressBarWidth}, 2000).html(percent + "% ");
     }
-
 
     io.socket.get('/game-authenticate', null, function (res) {
         console.log('authenticate');
@@ -37,7 +39,6 @@ $(document).ready(function () {
             alert(res.message + "<br/><br/>" + res.error);
         }
     });
-
 
     $(document).on('click', '.case', function () {
         if (reinforcementsTime) {
@@ -140,6 +141,57 @@ $(document).ready(function () {
         });
     });
 
+    io.socket.on('update-ressource-case', function (res) {
+        if (res.idCase != null) {
+            var endTD = $(".case[data-idcase='" + res.idCase + "']");
+            endTD.find('img').remove();
+        }
+        if (res.idPlayer == myId) {
+            $('#my-ressources').text(res.newRessource);
+        }
+    });
+
+    $('#show-research').on('click', function (e) {
+        e.preventDefault();
+        if ($(this).hasClass('closed')) {
+            $(this).removeClass('closed');
+            $(this).addClass('opened');
+            $(this).find('img').attr('src', '/images/arrow-right.png');
+            $('#part-game').removeClass('col-md-offset-3');
+            $('#part-research').removeClass('hidden');
+        } else {
+            $(this).removeClass('opened');
+            $(this).addClass('closed');
+            $(this).find('img').attr('src', '/images/arrow-left.png');
+            $('#part-game').addClass('col-md-offset-3');
+            $('#part-research').addClass('hidden');
+        }
+    });
+
+    $('.lvl-up-amelioration').on('click', function () {
+        var idAmelioration = $(this).closest('tr').attr('data-idamelioration');
+        io.socket.get('/lvl-up-amelioration', {idAmelioration: idAmelioration}, function (res) {
+            if (!res.success) {
+                alert(res.message);
+            }
+        });
+    });
+
+    io.socket.on('update-research', function (data) {
+        var tr = $("tr[data-idamelioration='" + data.idAmelioration + "']");
+        tr.removeClass('not-researched');
+        tr.removeClass('in-research');
+        if (data.progres == 100) {
+            tr.addClass('researched');
+        } else {
+            tr.addClass('in-research');
+        }
+        var progressBar = tr.find('.progressBar');
+        alert('progres:' + data.progres);
+        alert('idamelioration:' + data.idAmelioration);
+        progress(data.progres, progressBar);
+    });
+
     function updateCase(idCase, idPlayer, unitsLength) {
         var endTD = $(".case[data-idcase='" + idCase + "']");
 
@@ -172,7 +224,6 @@ $(document).ready(function () {
         startCase = null;
         endCase = null;
     }
-
 
     function displayFlashMessage(message) {
         alert(message);

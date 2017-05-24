@@ -163,6 +163,10 @@ module.exports.routes = {
     '/update-after-reinforcements': {
         controller: 'GameController',
         action: 'updateAfterReinforcements'
+    },
+    '/lvl-up-amelioration': {
+        controller: 'GameController',
+        action: 'lvlUpAmelioration'
     }
 
 

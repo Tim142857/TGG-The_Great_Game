@@ -18,7 +18,7 @@ module.exports = {
             required: true
         },
 
-        resourceQt: {
+        ressourceQt: {
             type: 'integer',
             required: false,
             defaulsTo: 0

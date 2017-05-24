@@ -69,6 +69,7 @@ var MapController = {
                         coordX: newCase.coordX,
                         coordY: newCase.coordY,
                         type: newCase.type,
+                        unitsMax: newCase.unitsMax,
                         horizontalBridge: newCase.horizontalBridge,
                         amelioration: newCase.amelioration
                     }

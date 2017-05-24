@@ -162,7 +162,32 @@ var GameController = {
                                                         //mise a jour du ownedby de la case darrivee
                                                         Case.update(endCase.id, {ownedBy: req.session.user.id}).exec(function afterwards(err, endCase) {
                                                             if (err)console.log(err);
+
+                                                            endCase = endCase[0];
+                                                            if (endCase.amelioration != null) {
+                                                                Amelioration.findOne(endCase.amelioration).exec(function (err, amelioration) {
+                                                                    if (err)console.log(err);
+
+                                                                    var newRessource = req.session.user.ressourceQt + amelioration.value;
+                                                                    User.update(req.session.user.id, {ressourceQt: newRessource}).exec(function afterwards(err, user) {
+                                                                        if (err)console.log(user);
+
+                                                                        Case.update(endCase.id, {amelioration: null}).exec(function afterwards(err, updatedRecords) {
+                                                                            if (err)console.log(err);
+
+
+                                                                            req.session.user = user[0];
+                                                                            sails.sockets.broadcast('room-game-' + game.id, 'update-ressource-case', {
+                                                                                idCase: endCase.id,
+                                                                                idPlayer: req.session.user.id,
+                                                                                newRessource: req.session.user.ressourceQt
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
+                                                            }
                                                         });
+
 
                                                         //Fin Partie de code à vérifier---------------------------------------------------------------------
                                                         sails.sockets.broadcast('room-game-' + game.id, 'update-case', {
@@ -310,6 +335,7 @@ var GameController = {
                     });
                 } else {
 
+                    //Fin du tour du deuxieme joueur =>reinforcements time
                     if (req.session.user.id != game.firstPlayer) {
                         game.players.forEach(function (elm, index) {
                             User.findOne(elm.id).populate('cases').exec(function (err, player) {
@@ -318,7 +344,11 @@ var GameController = {
                                 User.update(player.id, {reinforcementsLeft: player.cases.length}).exec(function afterwards(err, records) {
                                     if (err)console.log(err);
 
-                                    Game.update(game.id, {reinforcementsTime: true}).exec(function afterwards(err, records) {
+                                    var turnNb = game.turnNb++;
+                                    Game.update(game.id, {
+                                        reinforcementsTime: true,
+                                        turnNb: turnNb
+                                    }).exec(function afterwards(err, records) {
                                         if (err)console.log(err);
 
                                         sails.sockets.broadcast(elm.socket, 'end-turn', {
@@ -328,7 +358,9 @@ var GameController = {
                                 });
                             });
                         });
-                    } else {
+                    }
+                    //fin du tour du premier joueur
+                    else {
                         game.players.forEach(function (elm, index) {
                             if (elm.id != req.session.user.id) {
                                 Game.update(game.id, {turnPlayer: elm.id}).exec(function afterwards(err, gameUpdated) {
@@ -412,6 +444,10 @@ var GameController = {
             User.findOne(req.session.user.id).exec(function (err, user) {
                 if (err)console.log(err);
 
+                var unitsToCheck = req.session.newUnits.filter(function (elm) {
+                    return elm.idCase == actualCase.id;
+                })[0];
+                var nbUnits = typeof(unitsToCheck) == 'undefined' ? 'undefined' : unitsToCheck.units;
                 if (user.reinforcementsLeft == 0) {
                     res.send({
                         success: false,
@@ -423,7 +459,14 @@ var GameController = {
                         success: false,
                         message: 'Cette case ne vous appartient pas'
                     });
-                } else if (actualCase.units.length == actualCase.unitMax) {
+                }
+                else if (actualCase.units.length == actualCase.unitsMax) {
+                    res.send({
+                        success: false,
+                        message: "Cette case contient déjà le nombre maximum d'unités"
+                    });
+                }
+                else if (typeof(nbUnits) != 'undefined' && nbUnits + actualCase.units.length >= actualCase.unitsMax) {
                     res.send({
                         success: false,
                         message: "Cette case contient déjà le nombre maximum d'unités"
@@ -650,6 +693,7 @@ var GameController = {
         });
     },
 
+    //update cases and bonus after reinforcements time
     updateAfterReinforcements: function (req, res) {
         var unitsToCreate = [];
         var casesUpdated = [];
@@ -681,10 +725,152 @@ var GameController = {
                 req.session.newUnits = [];
             });
         }
+
+        GameController.updateBonus(req);
     },
 
-    test: function (req, res) {
-        
+    lvlUpAmelioration: function (req, res) {
+
+        var idAmelioration = req.param('idAmelioration');
+
+        Game.findOne(req.session.user.game).exec(function (err, game) {
+            if (err)console.log(err);
+
+            if (game.turnPlayer != req.session.user.id) {
+                res.send({
+                    success: false,
+                    message: "Ce n'est pas à vous de jouer"
+                });
+            } else {
+                BonusOwned.findOne({
+                    player: req.session.user.id,
+                    amelioration: idAmelioration
+                }).exec(function (err, bonus) {
+                    if (err)console.log(err);
+
+                    if (typeof(bonus) != 'undefined') {
+                        res.send({
+                            success: false,
+                            message: "Vous avez déjà lancé cette recherche"
+                        });
+                    } else {
+                        Amelioration.findOne(idAmelioration).exec(function (err, amelioration) {
+                            if (err)console.log(err);
+                            console.log(amelioration);
+                            if (amelioration.level > 1) {
+                                BonusOwned.findOne({
+                                    player: req.session.user.id,
+                                    amelioration: amelioration.id - 1
+                                }).exec(function (err, subBonus) {
+                                    if (err)console.log(err);
+
+                                    if (typeof(subBonus) == 'undefined') {
+                                        res.send({
+                                            success: false,
+                                            message: "Vous devez rechercher d'abord le level inférieur"
+                                        });
+                                    } else {
+                                        User.findOne(req.session.user.id).exec(function (err, user) {
+                                            if (err)console.log(err);
+
+                                            if (user.ressourceQt < amelioration.manaCost) {
+                                                res.send({
+                                                    success: false,
+                                                    message: "Ressources insuffisantes"
+                                                });
+                                            } else {
+                                                var isActive = amelioration.delayToUse == 0;
+                                                BonusOwned.create({
+                                                    startTurn: game.turnNb,
+                                                    amelioration: idAmelioration,
+                                                    player: req.session.user.id,
+                                                    isActive: isActive
+                                                }).exec(function (err, bonus) {
+                                                    var progres = isActive ? 100 : 0;
+
+                                                    sails.sockets.broadcast(user.socket, 'update-research', {
+                                                        idAmelioration: idAmelioration,
+                                                        progres: progres
+                                                    });
+
+                                                    var newRessource = user.ressourceQt - amelioration.manaCost;
+                                                    User.update(req.session.user.id, {ressourceQt: newRessource}).exec(function afterwards(err, updatedRecords) {
+                                                        if (err)console.log(err);
+
+                                                        sails.sockets.broadcast('room-game-' + game.id, 'update-ressource-case', {
+                                                            idPlayer: req.session.user.id,
+                                                            idCase: null,
+                                                            newRessource: updatedRecords[0].ressourceQt
+                                                        });
+                                                    })
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                User.findOne(req.session.user.id).exec(function (err, user) {
+                                    if (err)console.log(err);
+
+                                    if (user.ressourceQt < amelioration.manaCost) {
+                                        res.send({
+                                            success: false,
+                                            message: "Ressources insuffisantes"
+                                        });
+                                    } else {
+                                        var isActive = amelioration.delayToUse == 0;
+                                        BonusOwned.create({
+                                            startTurn: game.turnNb,
+                                            amelioration: idAmelioration,
+                                            player: req.session.user.id,
+                                            isActive: isActive
+                                        }).exec(function (err, bonus) {
+                                            var progres = isActive ? 100 : 0;
+
+                                            sails.sockets.broadcast(user.socket, 'update-research', {
+                                                idAmelioration: idAmelioration,
+                                                progres: progres
+                                            });
+
+                                            var newRessource = user.ressourceQt - amelioration.manaCost;
+                                            User.update(req.session.user.id, {ressourceQt: newRessource}).exec(function afterwards(err, updatedRecords) {
+                                                if (err)console.log(err);
+
+                                                sails.sockets.broadcast('room-game-' + game.id, 'update-ressource-case', {
+                                                    idPlayer: req.session.user.id,
+                                                    idCase: null,
+                                                    newRessource: updatedRecords[0].ressourceQt
+                                                });
+                                            })
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    },
+
+    updateBonus: function (req) {
+        Game.findOne(req.session.user.game).exec(function (err, game) {
+            if (err)console.log(err);
+
+            BonusOwned.find({player: req.session.user.id}).populate('amelioration').exec(function (err, bonus) {
+                if (err)console.log(err);
+
+                bonus.forEach(function (elm, index) {
+                    var pourcentage = elm.amelioration.delayToUse > 0 ? Math.floor((game.turnNb - elm.startTurn) / elm.amelioration.delayToUse * 100) : 100;
+
+                    if (pourcentage > 100)pourcentage = 100;
+                    sails.sockets.broadcast(req.session.user.socket, 'update-research', {
+                        idAmelioration: elm.amelioration.id,
+                        progres: pourcentage
+                    });
+                });
+            });
+        });
     }
 };
 
