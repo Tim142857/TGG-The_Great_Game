@@ -170,7 +170,7 @@ var GameController = {
 
                                                                     var newRessource = req.session.user.ressourceQt + amelioration.value;
                                                                     User.update(req.session.user.id, {ressourceQt: newRessource}).exec(function afterwards(err, user) {
-                                                                        if (err)console.log(user);
+                                                                        if (err)console.log(err);
 
                                                                         Case.update(endCase.id, {amelioration: null}).exec(function afterwards(err, updatedRecords) {
                                                                             if (err)console.log(err);
@@ -217,8 +217,6 @@ var GameController = {
                                                                         for (var i = 0; i < survivor; i++) {
                                                                             Unit.create({
                                                                                 case: endCase.id,
-                                                                                minValue: 1,
-                                                                                maxvalue: 6
                                                                             }).exec(function (err, unit) {
                                                                                 if (err)console.log(err);
                                                                             })
@@ -229,8 +227,6 @@ var GameController = {
 
                                                                             Unit.create({
                                                                                 case: startCase.id,
-                                                                                minValue: 1,
-                                                                                maxvalue: 6
                                                                             }).exec(function (err, unitStartCase) {
                                                                                 if (err)console.log(err);
 
@@ -387,7 +383,7 @@ var GameController = {
 
             var strengthAtk = 0;
             for (var i = 1; i < caseAtk.units.length; i++) {
-                strengthAtk += GameController.random(caseAtk.units[i].minValue, caseAtk.units[i].maxValue);
+                strengthAtk += GameController.random(caseAtk.units[i].minAtkValue, caseAtk.units[i].maxAtkValue);
                 if (i == caseAtk.units.length - 1) {
 
                     Case.findOne(idCaseDef).populate('units').populate('ownedBy').exec(function (err, caseDef) {
@@ -395,7 +391,7 @@ var GameController = {
 
                         var strengthDef = 0;
                         for (var j = 0; j < caseDef.units.length; j++) {
-                            strengthDef += GameController.random(caseDef.units[j].minValue, caseDef.units[j].maxValue);
+                            strengthDef += GameController.random(caseDef.units[j].minDefValue, caseDef.units[j].maxDefValue);
                             if (j == caseDef.units.length - 1) {
                                 //Determination du gagnant
                                 var idPlayerWinner;
@@ -756,7 +752,7 @@ var GameController = {
                     } else {
                         Amelioration.findOne(idAmelioration).exec(function (err, amelioration) {
                             if (err)console.log(err);
-                            console.log(amelioration);
+
                             if (amelioration.level > 1) {
                                 BonusOwned.findOne({
                                     player: req.session.user.id,
@@ -803,6 +799,7 @@ var GameController = {
                                                             newRessource: updatedRecords[0].ressourceQt
                                                         });
                                                     })
+
                                                 });
                                             }
                                         });
@@ -842,6 +839,8 @@ var GameController = {
                                                     newRessource: updatedRecords[0].ressourceQt
                                                 });
                                             })
+
+                                            GameController.updateUnitsAfterBonus(req, amelioration.id);
                                         });
                                     }
                                 });
@@ -868,6 +867,79 @@ var GameController = {
                         idAmelioration: elm.amelioration.id,
                         progres: pourcentage
                     });
+
+                    if (game.turnNb - elm.startTurn == elm.amelioration.delayToUse) {
+                        GameController.updateUnitsAfterBonus(req, elm.amelioration.id, null);
+                    }
+
+                });
+            });
+        });
+    },
+
+    updateUnitsAfterBonus: function (req, idAmelioration, callback) {
+        var changeToDo = false;
+        var querySet = '';
+        var textToSend = '';
+        User.findOne(req.session.user.id).exec(function (err, user) {
+            if (err)console.log(err);
+
+            Amelioration.findOne(idAmelioration).exec(function (err, amelioration) {
+                if (err)console.log(err);
+
+                Case.findOne({ownedBy: user.id}).populate('units').exec(function (err, actualCase) {
+                    if (err)console.log(err);
+
+                    if (typeof(actualCase) == 'undefined' || actualCase == null) {
+                        console.log('problème pendant vchargment de case');
+                    }
+
+                    switch (amelioration.type) {
+                        case 1:
+                            changeToDo = true;
+                            textToSend = "Changements sur vos unités:" + "\n";
+                            textToSend += "Valeur atk: " + actualCase.units[0].minAtkValue + "/" + actualCase.units[0].maxAtkValue + " =>";
+                            textToSend += (amelioration.value + actualCase.units[0].minAtkValue) + "/" + (amelioration.value + actualCase.units[0].maxAtkValue);
+                            querySet = 'minAtkValue=' + (amelioration.value + actualCase.units[0].minAtkValue) + ', maxAtkValue=' + (amelioration.value + actualCase.units[0].maxAtkValue);
+                            break;
+                        case 2:
+                            changeToDo = true;
+                            textToSend = "Changements sur vos unités:" + "\n";
+                            textToSend += "Valeur def: " + actualCase.units[0].minDefValue + "/" + actualCase.units[0].maxDefValue + " =>";
+                            textToSend += (amelioration.value + actualCase.units[0].minDefValue) + "/" + (amelioration.value + actualCase.units[0].maxDefValue);
+                            querySet = 'minDefValue=' + (amelioration.value + actualCase.units[0].minDefValue) + ', maxDefValue=' + (amelioration.value + actualCase.units[0].maxDefValue);
+                            break;
+                        case 3:
+                            changeToDo = true;
+                            textToSend = "Changements sur vos unités:" + "\n";
+                            textToSend += "Valeur atk: " + actualCase.units[0].minAtkValue + "/" + actualCase.units[0].maxAtkValue + " =>";
+                            textToSend += (amelioration.value + actualCase.units[0].minAtkValue) + "/" + (amelioration.value + actualCase.units[0].maxAtkValue);
+                            textToSend += "\n";
+                            textToSend += "Valeur def: " + actualCase.units[0].minDefValue + "/" + actualCase.units[0].maxDefValue + " =>";
+                            textToSend += (amelioration.value + actualCase.units[0].minDefValue) + "/" + (amelioration.value + actualCase.units[0].maxDefValue);
+                            querySet = 'minDefValue=' + (amelioration.value + actualCase.units[0].minDefValue) + ', maxDefValue=' + (amelioration.value + actualCase.units[0].maxDefValue) + ', minAtkValue=' + (amelioration.value + actualCase.units[0].minAtkValue) + ', maxAtkValue=' + (amelioration.value + actualCase.units[0].maxAtkValue);
+                            break;
+                        default:
+                            break;
+                    }
+                    var query = "update unit u inner join `case` c on u.case=c.id set " + querySet + " where c.ownedBy=" + req.session.user.id;
+
+                    if (changeToDo) {
+                        Unit.query(query, null, function (err, rawResult) {
+                            if (err) {
+                                console.log(err);
+                            }
+
+                            sails.sockets.broadcast(user.socket, 'update-units', {
+                                message: textToSend
+                            });
+
+                        });
+                    }
+
+                    if (typeof(callback) != 'undefined' && callback != null) {
+                        callback();
+                    }
                 });
             });
         });

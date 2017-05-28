@@ -13,12 +13,22 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
         },
-        minValue: {
+        minAtkValue: {
             type: 'integer',
             required: true,
             defaultsTo: 1
         },
-        maxValue: {
+        maxAtkValue: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 6
+        },
+        minDefValue: {
+            type: 'integer',
+            required: true,
+            defaultsTo: 1
+        },
+        maxDefValue: {
             type: 'integer',
             required: true,
             defaultsTo: 6

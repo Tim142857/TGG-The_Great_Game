@@ -25,12 +25,11 @@ var ChatController = {
                         for (var i = 0; i < results.length; i++) {
                             if (i <= results.length) {
                                 if (results[i].type == 'video' && results[i].content.indexOf('youtube') === -1 && results[i].content.indexOf('dailymotion') === -1 && results[i].content.indexOf('vimeo') === -1) {
-                                    console.log('ici');
+
                                     ChatMessage.update({id: results[i].id}, {display: false}).exec(function afterwards(err, updated) {
                                         if (err) {
                                             console.log(err);
                                         }
-                                        // console.log(updated);
                                     });
                                 } else {
                                     sails.sockets.broadcast(user.socketChat, 'receive-message', {
@@ -54,7 +53,6 @@ var ChatController = {
         if (content.length > 254) {
             content = content.substr(0, 254);
         }
-        console.log(content);
         var type = req.param('type');
         var user = req.session.user;
         var date = new Date();
@@ -119,8 +117,7 @@ var ChatController = {
                 if (err) {
                     console.log(err);
                 }
-                console.log('----------------------------------');
-                console.log(chatMessage.date);
+
                 sails.sockets.blast('receive-message', {
                     content: content,
                     type: type,
@@ -276,7 +273,6 @@ var ChatController = {
                                         if (err)console.log(err);
                                         Song.findOne(song.id).exec(function (err, song) {
                                             if (song.titleFound && song.artistFound) {
-                                                console.log('ici');
                                                 sails.sockets.blast('answers-found', {
                                                     chatMessageId: song.chatMessage
                                                 });
@@ -377,10 +373,6 @@ var ChatController = {
 
         var length = (b.length + a.length) / 2;
         var result = matrix[b.length][a.length] / length * 10;
-        console.log(a);
-        console.log(b);
-        console.log(result);
-        console.log('----------------------');
         return result;
     },
 

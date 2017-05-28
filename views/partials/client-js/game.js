@@ -187,9 +187,12 @@ $(document).ready(function () {
             tr.addClass('in-research');
         }
         var progressBar = tr.find('.progressBar');
-        alert('progres:' + data.progres);
-        alert('idamelioration:' + data.idAmelioration);
         progress(data.progres, progressBar);
+    });
+
+    io.socket.on('update-units', function (data) {
+        alert('updated units');
+        displayFlashMessage(data.message);
     });
 
     function updateCase(idCase, idPlayer, unitsLength) {
