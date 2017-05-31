@@ -47,7 +47,7 @@ module.exports.connections = {
     //     password: '', //optional
     //     database: 'risksails' //optional
     // },
-    someMysqlServer: {
+    someMysqlServerProd: {
         adapter: 'sails-mysql',
         host: 'us-cdbr-iron-east-03.cleardb.net',
         user: 'bb77a231ab3d6d', //optional
