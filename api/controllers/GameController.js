@@ -6,6 +6,7 @@
  */
 
 var GameController = {
+
     startGame: function (req, res) {
         if (typeof(req.session.cases) == 'undefined') {
             req.session.cases = [];
@@ -352,6 +353,8 @@ var GameController = {
                                         });
                                     });
                                 });
+
+                                GameController.updateRessources(elm.id);
                             });
                         });
                     }
@@ -942,6 +945,50 @@ var GameController = {
                     }
                 });
             });
+        });
+    },
+
+    updateRessources: function (idPlayer) {
+        User.findOne(idPlayer).populate('cases').exec(function (err, user) {
+            BonusOwned.find({player: idPlayer}).populate('amelioration').exec(function (err, bonuss) {
+                if (err)console.log(err);
+
+                var ressources = 0;
+                if (bonuss.length > 0) {
+                    for (var i = 0; i < bonuss.length; i++) {
+                        if (bonuss[i].amelioration.type == '5') {
+                            ressources += bonuss[i].amelioration.value;
+                        }
+                        if (i == (bonuss.length - 1)) {
+                            ressources += user.cases.length;
+                            ressources += user.ressourceQt;
+                            User.update(idPlayer, {ressourceQt: ressources}).exec(function afterwards(err, updatedrecords) {
+                                if (err)console.log(err);
+
+                                sails.sockets.broadcast(user.socket, 'update-ressource-case', {
+                                    idCase: null,
+                                    idPlayer: user.id,
+                                    newRessource: ressources
+                                });
+                            });
+                        }
+                    }
+                } else {
+                    ressources += user.cases.length;
+                    ressources += user.ressourceQt;
+                    User.update(idPlayer, {ressourceQt: ressources}).exec(function afterwards(err, updatedrecords) {
+                        if (err)console.log(err);
+
+                        sails.sockets.broadcast(user.socket, 'update-ressource-case', {
+                            idCase: null,
+                            idPlayer: user.id,
+                            newRessource: ressources
+                        });
+                    });
+                }
+
+            });
+            var ressources = user.ressourceQt + cases.length;
         });
     }
 };

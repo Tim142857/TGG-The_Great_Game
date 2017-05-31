@@ -147,6 +147,7 @@ $(document).ready(function () {
             endTD.find('img').remove();
         }
         if (res.idPlayer == myId) {
+            alert('vous avez gagné:' + (res.newRessource - parseInt($('#my-ressources').text())));
             $('#my-ressources').text(res.newRessource);
         }
     });

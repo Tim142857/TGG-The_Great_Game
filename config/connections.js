@@ -40,21 +40,21 @@ module.exports.connections = {
      * Run: npm install sails-mysql                                             *
      *                                                                          *
      ***************************************************************************/
-    someMysqlServer: {
-        adapter: 'sails-mysql',
-        host: 'localhost',
-        user: 'root', //optional
-        password: '', //optional
-        database: 'risksails' //optional
-    },
     // someMysqlServer: {
     //     adapter: 'sails-mysql',
-    //     host: 'us-cdbr-iron-east-03.cleardb.net',
-    //     user: 'bb77a231ab3d6d', //optional
-    //     password: '0c767090', //optional
-    //     database: 'heroku_89296e61b668345', //optional
-    //     prefix: ''
+    //     host: 'localhost',
+    //     user: 'root', //optional
+    //     password: '', //optional
+    //     database: 'risksails' //optional
     // },
+    someMysqlServer: {
+        adapter: 'sails-mysql',
+        host: 'us-cdbr-iron-east-03.cleardb.net',
+        user: 'bb77a231ab3d6d', //optional
+        password: '0c767090', //optional
+        database: 'heroku_89296e61b668345', //optional
+        prefix: ''
+    },
     /***************************************************************************
      *                                                                          *
      * MongoDB is the leading NoSQL database.                                   *
