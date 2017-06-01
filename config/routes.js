@@ -93,7 +93,7 @@ module.exports.routes = {
         controller: 'UserController',
         action: 'rules'
     },
-    '/play': {
+    '/play/:color': {
         controller: 'UserController',
         action: "play"
     },

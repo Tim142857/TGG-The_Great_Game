@@ -1,10 +1,20 @@
 $(document).ready(function () {
 
     //Variables
+    var tuto;
+    if (readCookie('tgg-tuto')) {
+        tuto = readCookie('tgg-tuto');
+    } else {
+        tuto = true;
+    }
     var myId = $('#myId').text();
     var startCase = null;
     var endCase = null;
     var reinforcementsTime = $('#reinforcements-time').text() === 'true';
+
+    if(tuto){
+
+    }
 
     $(".case").each(function () {
         $(this).css('height', $(this).css('width'));
@@ -147,7 +157,9 @@ $(document).ready(function () {
             endTD.find('img').remove();
         }
         if (res.idPlayer == myId) {
-            alert('vous avez gagné:' + (res.newRessource - parseInt($('#my-ressources').text())));
+            var move = res.newRessource - parseInt($('#my-ressources').text());
+            var text = move > 0 ? 'Vous avez gagné ' + move : 'Vous avez dépensé ' + (move * -1);
+            displayFlashMessage(text);
             $('#my-ressources').text(res.newRessource);
         }
     });
@@ -191,8 +203,8 @@ $(document).ready(function () {
         progress(data.progres, progressBar);
     });
 
-    io.socket.on('update-units', function (data) {
-        alert('updated units');
+    io.socket.on('update-bonus', function (data) {
+        alert('updated bonus');
         displayFlashMessage(data.message);
     });
 
@@ -231,6 +243,31 @@ $(document).ready(function () {
 
     function displayFlashMessage(message) {
         alert(message);
+    }
+
+    function createCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        createCookie(name, "", -1);
     }
 
 });

@@ -240,15 +240,15 @@ var AdminController = {
             //bonus ressource
             var ameliorationRessource1 = {id: 31, delayToUse: 0, manaCost: 0, type: 6, value: 1, level: 1};
             ameliorationsToInsert.push(ameliorationRessource1);
-            var ameliorationRessource2 = {id: 32, delayToUse: 0, manaCost: 0, type: 6, value: 3, level: 2};
+            var ameliorationRessource2 = {id: 32, delayToUse: 1, manaCost: 0, type: 6, value: 3, level: 2};
             ameliorationsToInsert.push(ameliorationRessource2);
-            var ameliorationRessource3 = {id: 33, delayToUse: 0, manaCost: 0, type: 6, value: 8, level: 3};
+            var ameliorationRessource3 = {id: 33, delayToUse: 2, manaCost: 0, type: 6, value: 8, level: 3};
             ameliorationsToInsert.push(ameliorationRessource3);
-            var ameliorationRessource4 = {id: 34, delayToUse: 1, manaCost: 0, type: 6, value: 5, level: 4};
+            var ameliorationRessource4 = {id: 34, delayToUse: 3, manaCost: 0, type: 6, value: 5, level: 4};
             ameliorationsToInsert.push(ameliorationRessource4);
-            var ameliorationRessource5 = {id: 35, delayToUse: 2, manaCost: 0, type: 6, value: 15, level: 5};
+            var ameliorationRessource5 = {id: 35, delayToUse: 4, manaCost: 0, type: 6, value: 15, level: 5};
             ameliorationsToInsert.push(ameliorationRessource5);
-            var ameliorationRessource6 = {id: 36, delayToUse: 3, manaCost: 0, type: 6, value: 30, level: 6};
+            var ameliorationRessource6 = {id: 36, delayToUse: 5, manaCost: 0, type: 6, value: 30, level: 6};
             ameliorationsToInsert.push(ameliorationRessource6);
 
             Amelioration.create(ameliorationsToInsert).exec(function (err, records) {

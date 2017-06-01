@@ -81,7 +81,7 @@ $(document).ready(function () {
         html += "<div class='col-xs-1' style='padding:0;'><div class='icon-blind-test icon-artist'><img class='img-responsive' src='/images/icone-micro.png'></div>";
         html += "<div class='icon-blind-test icon-title'><img class='img-responsive' src='/images/icone-musique.png'></img></div></div>";
         html += "<div class='col-xs-3' style='height:50px'></div>";
-        html += "</div>";
+        html += "</div><br/>";
         return generateMessage(username, html, date);
     }
 

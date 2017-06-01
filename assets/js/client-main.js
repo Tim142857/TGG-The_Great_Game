@@ -2,7 +2,16 @@ $(document).ready(function () {
 
     $('#btn-play').on('click', function (e) {
         e.preventDefault();
-        io.socket.get('/play');
+        $('#myModal').modal();
+    });
+
+    $('#btn-play-game').on('click', function () {
+        var colorChoosen = $('#select-color').val();
+        io.socket.get('/play/' + colorChoosen);
+    });
+
+    $('#cancel-play').on('click', function () {
+        $('#myModal').modal('toggle');
     });
 
     io.socket.on('redirect', function (destination) {

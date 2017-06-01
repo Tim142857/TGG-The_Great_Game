@@ -24,7 +24,19 @@ var UserController = {
     },
 
     ranking: function (req, res) {
-        res.view('ranking');
+        User.find().sort('elo DESC').limit(10).exec(function (err, users) {
+            if (err)console.log(err);
+
+            User.findOne(req.session.user.id).exec(function (err, user) {
+                User.find({elo: {'>': user.elo}}).exec(function (err, betterUsers) {
+                    if (err)console.log(err);
+
+                    var myRank = betterUsers.length + 1;
+                    res.view('ranking', {users: users, myRank: myRank});
+                });
+            });
+
+        });
     },
 
     rules: function (req, res) {
@@ -34,6 +46,7 @@ var UserController = {
     play: function (req, res) {
         var oldSocket = req.session.user.socket;
         var newSocket = sails.sockets.getId(req);
+        var color = req.param('color');
         if (!req.isSocket) {
             console.log('bad request');
         } else {
@@ -43,7 +56,10 @@ var UserController = {
                 sails.sockets.broadcast(oldSocket, 'redirect', destination);
             }
             //update id socket in base
-            User.update(req.session.user.id, {socket: newSocket}).exec(function afterwards(err, updated) {
+            User.update(req.session.user.id, {
+                socket: newSocket,
+                colorCase: color
+            }).exec(function afterwards(err, updated) {
                 sails.sockets.broadcast(newSocket, 'pending');
 
                 // check if a player is waiting for a game
@@ -53,13 +69,11 @@ var UserController = {
                             //change status of the 2 players in in-game
                             User.update(req.session.user.id, {
                                 state: 'in-game',
-                                colorCase: 'red',
                                 ressourceQt: 0
                             }).exec(function afterwards(err, updated) {
                                 if (err)console.log(err);
                                 User.update(record.id, {
                                     state: 'in-game',
-                                    colorCase: 'grey',
                                     ressourceQt: 0
                                 }).exec(function afterwards(err, updated) {
                                     if (err)console.log(err);
