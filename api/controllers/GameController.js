@@ -991,7 +991,7 @@ var GameController = {
                 }
 
             });
-            var ressources = user.ressourceQt + cases.length;
+            var ressources = user.ressourceQt + user.cases.length;
         });
     }
 };
