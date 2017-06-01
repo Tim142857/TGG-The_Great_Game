@@ -314,6 +314,9 @@ var GameController = {
     },
 
     endTurn: function (req, res) {
+        if (!req.isSocket) {
+            console.log('bad request, not a socket!');
+        }
         req.session.user.socket = sails.sockets.getId(req);
         var idPlayer = req.param('id');
         if (idPlayer != req.session.user.id) {
