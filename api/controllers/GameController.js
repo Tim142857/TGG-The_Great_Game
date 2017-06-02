@@ -33,18 +33,30 @@ var GameController = {
                             return a.numCase - b.numCase;
                         });
 
-                        TypeAmelioration.find().populate('ameliorations').exec(function (err, types) {
+                        var query = "select * from unit u inner join `case` c on u.`case`=c.id inner join user us on c.ownedBy=" + req.session.user.id;
+                        Unit.query(query, null, function (err, units) {
                             if (err)console.log(err);
 
-                            BonusOwned.find({player: req.session.user.id}).populate('amelioration').exec(function (err, bonus) {
+                            var unitsValue;
+                            if (units.length > 0) {
+                                unitsValue = [units[0].minAtkValue, units[0].maxAtkValue, units[0].minDefValue, units[0].maxDefValue];
+                            }
+
+
+                            TypeAmelioration.find().populate('ameliorations').exec(function (err, types) {
                                 if (err)console.log(err);
 
-                                res.view('game', {
-                                    game: game,
-                                    map: map,
-                                    cases: cases,
-                                    types: types,
-                                    bonus: bonus
+                                BonusOwned.find({player: req.session.user.id}).populate('amelioration').exec(function (err, bonus) {
+                                    if (err)console.log(err);
+
+                                    res.view('game', {
+                                        game: game,
+                                        map: map,
+                                        cases: cases,
+                                        types: types,
+                                        bonus: bonus,
+                                        unitsValue: unitsValue
+                                    });
                                 });
                             });
                         });
@@ -123,9 +135,9 @@ var GameController = {
                                         }
                                         if (ennemyPlayer == null) {
                                         } else {
-                                            GameController.verifCoord(startCase, endCase, game, function (verifCoord, verifCoord2, verifCoord3, verifCoord4) {
+                                            GameController.verifCoord(startCase, endCase, game, function (verifCoord, verifCoord2, verifCoord3, verifCoord4, verifCoord5) {
 
-                                                if (!verifCoord && !verifCoord2 && !verifCoord3 && !verifCoord4) {
+                                                if (!verifCoord && !verifCoord2 && !verifCoord3 && !verifCoord4 && !verifCoord5) {
                                                     res.send({
                                                         success: false,
                                                         message: 'deplacement impossible'
@@ -165,23 +177,31 @@ var GameController = {
                                                             if (err)console.log(err);
 
                                                             endCase = endCase[0];
+
+                                                            //Check si la case contenait des ressources
                                                             if (endCase.amelioration != null) {
-                                                                Amelioration.findOne(endCase.amelioration).exec(function (err, amelioration) {
+
+                                                                User.findOne(req.session.user.id).exec(function (err, user) {
                                                                     if (err)console.log(err);
 
-                                                                    var newRessource = req.session.user.ressourceQt + amelioration.value;
-                                                                    User.update(req.session.user.id, {ressourceQt: newRessource}).exec(function afterwards(err, user) {
+                                                                    Amelioration.findOne(endCase.amelioration).exec(function (err, amelioration) {
                                                                         if (err)console.log(err);
 
-                                                                        Case.update(endCase.id, {amelioration: null}).exec(function afterwards(err, updatedRecords) {
+                                                                        var newRessource = user.ressourceQt + amelioration.value;
+
+                                                                        User.update(user.id, {ressourceQt: newRessource}).exec(function afterwards(err, user) {
                                                                             if (err)console.log(err);
 
+                                                                            Case.update(endCase.id, {amelioration: null}).exec(function afterwards(err, updatedRecords) {
+                                                                                if (err)console.log(err);
 
-                                                                            req.session.user = user[0];
-                                                                            sails.sockets.broadcast('room-game-' + game.id, 'update-ressource-case', {
-                                                                                idCase: endCase.id,
-                                                                                idPlayer: req.session.user.id,
-                                                                                newRessource: req.session.user.ressourceQt
+
+                                                                                req.session.user = user[0];
+                                                                                sails.sockets.broadcast('room-game-' + game.id, 'update-ressource-case', {
+                                                                                    idCase: endCase.id,
+                                                                                    idPlayer: req.session.user.id,
+                                                                                    newRessource: req.session.user.ressourceQt
+                                                                                });
                                                                             });
                                                                         });
                                                                     });
@@ -314,6 +334,7 @@ var GameController = {
     },
 
     endTurn: function (req, res) {
+        console.log('end turn');
         if (!req.isSocket) {
             console.log('bad request, not a socket!');
         }
@@ -564,10 +585,11 @@ var GameController = {
         var deltaX = startCase.coordY - endCase.coordY;
         var verifCoord = (Math.abs(deltaX) == 1) && (Math.abs(deltaY) == 0);
         var verifCoord2 = (Math.abs(deltaX) == 0) && (Math.abs(deltaY) == 1);
+        var verifCoord5 = (Math.abs(deltaX) == 1) && (Math.abs(deltaY) == 1);
 
         GameController.verifDelta(startCase, endCase, game, function (verifCoord3) {
             GameController.verifDelta2(startCase, endCase, game, function (verifCoord4) {
-                callback(verifCoord, verifCoord2, verifCoord3, verifCoord4);
+                callback(verifCoord, verifCoord2, verifCoord5, verifCoord3, verifCoord4);
             });
         });
 
@@ -847,7 +869,11 @@ var GameController = {
                                             });
 
                                             if (isActive) {
-                                                GameController.updateAfterBonus(req, amelioration.id);
+                                                GameController.updateAfterBonus(req, amelioration.id, function () {
+                                                    if (amelioration.type == '1' || amelioration.type == '2' || amelioration.type == '3') {
+                                                        GameController.updateUnitsValue(req);
+                                                    }
+                                                });
                                             }
                                         });
                                     }
@@ -879,6 +905,9 @@ var GameController = {
                     if (game.turnNb - elm.startTurn == elm.amelioration.delayToUse) {
                         GameController.updateAfterBonus(req, elm.amelioration.id, null);
                     }
+                    setTimeout(function () {
+                        console.log('...')
+                    }, 1000);
 
                 });
             });
@@ -886,6 +915,7 @@ var GameController = {
     },
 
     updateAfterBonus: function (req, idAmelioration, callback) {
+        console.log('update after bonus');
         var changeToDo = false;
         var querySet = '';
         var textToSend = '';
@@ -963,6 +993,7 @@ var GameController = {
                                 Unit.query(query, null, function (err, rawResult) {
                                     if (err)console.log(err);
 
+                                    GameController.updateUnitsValue(req);
                                 });
                                 break;
 
@@ -981,7 +1012,6 @@ var GameController = {
                             default:
                                 break;
                         }
-
                     }
 
 
@@ -1039,6 +1069,25 @@ var GameController = {
             });
             var ressources = user.ressourceQt + user.cases.length;
         });
+    },
+
+    updateUnitsValue: function (req) {
+        User.findOne(req.session.user.id).exec(function (err, user) {
+            if (err)console.log(err);
+
+            var query = "select * from unit u inner join `case` c on u.`case`=c.id inner join user us on c.ownedBy=" + req.session.user.id;
+            Unit.query(query, null, function (err, units) {
+                if (err)console.log(err);
+
+                var unitsValue = [units[0].minAtkValue, units[0].maxAtkValue, units[0].minDefValue, units[0].maxDefValue];
+                console.log('unitsValue');
+                console.log(unitsValue);
+                sails.sockets.broadcast(user.socket, 'update-units-value', {
+                    unitsValue: unitsValue
+                });
+            });
+        });
+
     }
 };
 

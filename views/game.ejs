@@ -3,38 +3,49 @@
 </script>
 <div class="row" style="padding:20px 50px">
     <div id="infos-game">
-        <p>Tour n°<%= game.turnNb %></p>
-        <% var turnPlayer = game.players.filter(function (elm) {
-            return game.turnPlayer == elm.id
-        })[0] %>
-        <p id="turn-player" data-turnPlayer-name="<%= turnPlayer.name %>" data-turnPlayer-id="<%= turnPlayer.id %>">
-            C'est au tour de <%= turnPlayer.name %></p>
-        <p class="hidden" id="reinforcements-time"><%= game.reinforcementsTime %></p>
-        <p>Adversaire:
-            <% var ennemy = game.players.filter(function (elm) {
-                return req.session.user.id != elm.id
+        <div class="col-xs-12 col-sm-6">
+            <p>Tour n°<%= game.turnNb %></p>
+            <% var turnPlayer = game.players.filter(function (elm) {
+                return game.turnPlayer == elm.id
             })[0] %>
-            <%= ennemy.name %>
-        </p>
-        <p>
-            Ressources: <span id="my-ressources"><%= req.session.user.ressourceQt %></span>
-        </p>
-        <div id="infos-en-cours">
-            <p id="reinforcements-infos" <% if (game.reinforcementsTime == false){ %>class="hidden"
-                    <% } %>
-            >Il vous reste <span id="reinforcements-left">
-                    <% if(game.reinforcementsTime){ %>
-                    <%= req.session.user.reinforcementsLeft %>
-                    <% } %>
-                </span> à placer
+            <p id="turn-player" data-turnPlayer-name="<%= turnPlayer.name %>" data-turnPlayer-id="<%= turnPlayer.id %>">
+                C'est au tour de <%= turnPlayer.name %></p>
+            <p class="hidden" id="reinforcements-time"><%= game.reinforcementsTime %></p>
+            <p>Adversaire:
+                <% var ennemy = game.players.filter(function (elm) {
+                    return req.session.user.id != elm.id
+                })[0] %>
+                <%= ennemy.name %>
+            </p>
+            <p>
+                Ressources: <span id="my-ressources"><%= req.session.user.ressourceQt %></span>
+            </p>
+            <div id="infos-en-cours">
+                <p id="reinforcements-infos" <% if (game.reinforcementsTime == false){ %>class="hidden"
+                        <% } %>
+                >Il vous reste <span id="reinforcements-left">
+                        <% if(game.reinforcementsTime){ %>
+                        <%= req.session.user.reinforcementsLeft %>
+                        <% } %>
+                    </span> à placer
+                </p>
+            </div>
+            <ul class="hidden">
+                <% game.players.forEach(function(elm, index){ %>
+                <li data-infos-player='<%= elm.id %>' data-color="<%= elm.colorCase %>"><%= elm.id %></li>
+                <% }) %>
+            </ul>
+            <p class="hidden" id="myId"><%= req.session.user.id %></p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <p>
+                Infos sur vos unités: <br/>
+                Valeur d'attaque: <span id="minAtkUnit"><%= unitsValue[0] %></span>-<span
+                        id="maxAtkUnit"><%= unitsValue[1] %></span><br/>
+                Valeur de défense: <span id="minDefUnit"><%= unitsValue[2] %></span>-<span
+                        id="maxDefUnit"><%= unitsValue[3] %></span><br/>
             </p>
         </div>
-        <ul class="hidden">
-            <% game.players.forEach(function(elm, index){ %>
-            <li data-infos-player='<%= elm.id %>' data-color="<%= elm.colorCase %>"><%= elm.id %></li>
-            <% }) %>
-        </ul>
-        <p class="hidden" id="myId"><%= req.session.user.id %></p>
     </div>
 </div>
 <div class="row">

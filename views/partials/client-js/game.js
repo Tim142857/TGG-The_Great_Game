@@ -12,7 +12,7 @@ $(document).ready(function () {
     var endCase = null;
     var reinforcementsTime = $('#reinforcements-time').text() === 'true';
 
-    if(tuto){
+    if (tuto) {
 
     }
 
@@ -206,6 +206,15 @@ $(document).ready(function () {
     io.socket.on('update-bonus', function (data) {
         alert('updated bonus');
         displayFlashMessage(data.message);
+    });
+
+    io.socket.on('update-units-value', function (data) {
+        alert('update-unitsValue:' + data.unitsValue[0] + '-' + data.unitsValue[1]);
+        console.log(data.unitsValue);
+        $('#minAtkUnit').text(data.unitsValue[0]);
+        $('#maxAtkUnit').text(data.unitsValue[1]);
+        $('#minDefUnit').text(data.unitsValue[2]);
+        $('#maxDefUnit').text(data.unitsValue[3]);
     });
 
     function updateCase(idCase, idPlayer, unitsLength) {

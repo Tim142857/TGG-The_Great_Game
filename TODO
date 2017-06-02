@@ -6,8 +6,8 @@ autofocus input login/register/chat
 
 //GAME
 Voir pk au premier affichage pas tout le temps les 2 joueurs
-Permettre choisir couleur
 Effet sur les cases ennemies ou il y a eu reinforcements
-check si toutes les  cases deja completes et il reste des reinforcements
-avt lancer recherche, check si lvl - 1 deja recherche de l'amelioration
-augmentation ressources fin tour
+check si toutes les  cases deja completes et il reste des reinforcement
+QQ fois, autant d'uits arriver que dans case depart
+bonus units ecrase lancien plutot que de s'ajouter
+
