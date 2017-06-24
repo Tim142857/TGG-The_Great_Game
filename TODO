@@ -10,4 +10,5 @@ Effet sur les cases ennemies ou il y a eu reinforcements
 check si toutes les  cases deja completes et il reste des reinforcement
 QQ fois, autant d'uits arriver que dans case depart
 bonus units ecrase lancien plutot que de s'ajouter
+en cas de deconnexion enlever en attente d'aversaire
 

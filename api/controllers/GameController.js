@@ -334,7 +334,7 @@ var GameController = {
     },
 
     endTurn: function (req, res) {
-        console.log('end turn');
+
         if (!req.isSocket) {
             console.log('bad request, not a socket!');
         }
@@ -401,7 +401,6 @@ var GameController = {
                 }
             });
         }
-
     },
 
     strengthCalcul: function (idCaseAtk, idCaseDef, callback) {
@@ -455,7 +454,6 @@ var GameController = {
         User.findOne(req.session.user.id).populate('cases').exec(function (err, user) {
             if (user.cases.length == user.reinforcementsLeft) {
                 req.session.newUnits = [];
-            } else {
             }
         });
 
@@ -489,7 +487,7 @@ var GameController = {
                         message: "Cette case contient déjà le nombre maximum d'unités"
                     });
                 }
-                else if (typeof(nbUnits) != 'undefined' && nbUnits + actualCase.units.length >= actualCase.unitsMax) {
+                else if (typeof(nbUnits) != 'undefined' && (nbUnits + actualCase.units.length) >= actualCase.unitsMax) {
                     res.send({
                         success: false,
                         message: "Cette case contient déjà le nombre maximum d'unités"
@@ -511,14 +509,18 @@ var GameController = {
                     } else {
                         var caseFound = false;
                         var length = req.session.newUnits.length;
+                        var totalUnitsPending = 0;
                         for (var i = 0; i < length; i++) {
                             if (req.session.newUnits[i].idCase == actualCase.id) {
                                 req.session.newUnits[i].units++;
                                 caseFound = true;
+                                totalUnitsPending += req.session.newUnits[i].units;
                             }
+
                             if (i == (req.session.newUnits.length - 1)) {
                                 if (!caseFound) {
                                     req.session.newUnits.push({idCase: actualCase.id, units: 1});
+                                    totalUnitsPending++;
                                 }
                             }
                         }
@@ -532,47 +534,72 @@ var GameController = {
                             units: actualCase.units.length + unitsToAdd
                         });
                     }
-
-
                     res.send({
                         success: true,
                         message: 'all is ok'
                     });
 
-                    User.update(req.session.user.id, {reinforcementsLeft: user.reinforcementsLeft - 1}).exec(function afterwards(err, records) {
+                    //Check si toutes les cases sont deja remplies et quil reste des reinforcemets
+                    var query = 'select count(*) from unit u inner join `case`c on u.case=c.id where c.ownedBy=' + req.session.user.id;
+                    Unit.query(query, null, function (err, rawResults) {
                         if (err)console.log(err);
 
-                        Game.findOne(user.game).populate('players').exec(function (err, game) {
+                        var nbUnits = rawResults[0]['count(*)'];
+
+                        //recupere le nb d'unites max possibles
+                        var queryUnitsMax = 'select sum(unitsMax) from `case` c where c.ownedBy=' + req.session.user.id;
+                        Case.query(queryUnitsMax, null, function (err, rawResults) {
                             if (err)console.log(err);
 
-                            var reinforcementsTimeEnd = true;
-                            for (var i = 0; i < game.players.length; i++) {
-                                if (game.players[i].reinforcementsLeft > 0) {
-                                    reinforcementsTimeEnd = false;
-                                }
-                                if (i == game.players.length - 1 && reinforcementsTimeEnd) {
-                                    sails.sockets.broadcast('room-game-' + game.id, 'reinforcements-set', {});
+                            var nbUnitsMax = rawResults[0]['sum(unitsMax)'];
+                            var reinforcementsLeft;
 
-                                    Game.update(game.id, {
-                                        turnPlayer: game.firstPlayer,
-                                        reinforcementsTime: false
-                                    }).exec(function afterwards(err, gameUpdated) {
-                                        if (err)console.log(err);
-
-                                        User.findOne(game.firstPlayer).exec(function (err, user) {
-                                            if (err)console.log(err);
+                            console.log('units presentes:' + nbUnits);
+                            console.log('units en attente:' + totalUnitsPending);
+                            console.log('unitsMax:' + nbUnitsMax);
 
 
-                                            var roomName = 'room-game-' + game.id;
-                                            sails.sockets.broadcast(roomName, 'turn-player-change', {
-                                                idPlayer: user.id,
-                                                namePlayer: user.name
-                                            });
-                                            sails.sockets.broadcast(roomName, 'reinforcementsTime-ended', {});
-                                        });
-                                    });
-                                }
+                            if (nbUnits + totalUnitsPending >= nbUnitsMax) {
+                                reinforcementsLeft = 0;
+                            } else {
+                                reinforcementsLeft = user.reinforcementsLeft - 1;
                             }
+                            User.update(req.session.user.id, {reinforcementsLeft: reinforcementsLeft}).exec(function afterwards(err, records) {
+                                if (err)console.log(err);
+
+                                Game.findOne(user.game).populate('players').exec(function (err, game) {
+                                    if (err)console.log(err);
+
+                                    var reinforcementsTimeEnd = true;
+                                    for (var i = 0; i < game.players.length; i++) {
+                                        if (game.players[i].reinforcementsLeft > 0) {
+                                            reinforcementsTimeEnd = false;
+                                        }
+                                        if (i == game.players.length - 1 && reinforcementsTimeEnd) {
+                                            sails.sockets.broadcast('room-game-' + game.id, 'reinforcements-set', {});
+
+                                            Game.update(game.id, {
+                                                turnPlayer: game.firstPlayer,
+                                                reinforcementsTime: false
+                                            }).exec(function afterwards(err, gameUpdated) {
+                                                if (err)console.log(err);
+
+                                                User.findOne(game.firstPlayer).exec(function (err, user) {
+                                                    if (err)console.log(err);
+
+
+                                                    var roomName = 'room-game-' + game.id;
+                                                    sails.sockets.broadcast(roomName, 'turn-player-change', {
+                                                        idPlayer: user.id,
+                                                        namePlayer: user.name
+                                                    });
+                                                    sails.sockets.broadcast(roomName, 'reinforcementsTime-ended', {});
+                                                });
+                                            });
+                                        }
+                                    }
+                                });
+                            });
                         });
                     });
                 }
@@ -1027,7 +1054,7 @@ var GameController = {
         });
     },
 
-    updateRessources: function (idPlayer) {
+    updateRessources: function (idPlayer, callback) {
         User.findOne(idPlayer).populate('cases').exec(function (err, user) {
             BonusOwned.find({player: idPlayer}).populate('amelioration').exec(function (err, bonuss) {
                 if (err)console.log(err);
